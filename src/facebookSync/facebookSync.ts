@@ -1,6 +1,6 @@
 import {
-  getDateFormats,
-  getEpochTimeDateFrom,
+  getDateFrom,
+  getDateTo,
   updateDateFrom,
 } from "../utils/dateFuncs";
 import {createPerson} from "../pipedrive/createPerson";
@@ -17,17 +17,31 @@ async function syncFacebook() {
   const serviceName = "facebook";
   const processedLeadsInfo: ProcessedLeadInfo[] = [];
 
+  console.log(`[${serviceName}] Sync started`);
+
   try {
     const {
-      epochTime: dateFrom,
-      timestamp: dateFromTimestamp,
-    } = await getEpochTimeDateFrom(serviceName);
-    const {currentTimestamp, dateToEpochTime} = getDateFormats();
+      dateFromTimestamp,
+      dateFromIsoDate,
+      dateFromEpochTime,
+    } = await getDateFrom(serviceName);
+    const {
+      dateToTimestamp,
+      dateToIsoFormat,
+      dateToEpochTime,
+    } = getDateTo();
+
+    console.log(
+      // eslint-disable-next-line max-len
+      `[${serviceName}] Fetching data from ${dateFromIsoDate} to ${dateToIsoFormat}`
+    );
 
     const facebookLeadsArr = await handleFacebookLeads(
-      dateFrom - 1,
+      dateFromEpochTime - 1,
       dateToEpochTime + 1
     );
+
+    console.log(`[${serviceName}] Fetched ${facebookLeadsArr.length} records`);
 
     const savedLeads = await filterSavedLeads(serviceName, dateFromTimestamp);
 
@@ -43,6 +57,8 @@ async function syncFacebook() {
         campaignName,
       } = data;
 
+      console.log(`[${serviceName}] Processing lead with ID: ${id}`);
+
       const processedLeadInfo: ProcessedLeadInfo = {
         serviceLeadId: id,
         createdPersonId: null,
@@ -56,6 +72,10 @@ async function syncFacebook() {
 
       if (String(id) in savedLeads && savedLeads[id].createdPersonId) {
         personId = savedLeads[id].createdPersonId as number;
+
+        console.log(
+          `[${serviceName}] Found existing person with ID: ${personId}`
+        );
       } else {
         personId = await createPerson(
           phone,
@@ -84,11 +104,13 @@ async function syncFacebook() {
       await delay(200);
     }
 
-    await updateDateFrom(currentTimestamp, serviceName);
+    await updateDateFrom(dateToTimestamp, serviceName);
 
     await saveProcessedLeadInfo(processedLeadsInfo, serviceName);
 
     await resetSyncErrorState(serviceName);
+
+    console.log(`[${serviceName}] Sync completed successfully`);
   } catch (err) {
     // какая функция более важная:
     // отправить письмо или добавить обработанные лиды ?

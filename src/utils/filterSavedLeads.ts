@@ -47,6 +47,11 @@ async function filterSavedLeads(
       savedLeads[docId] = docData;
     });
 
+    console.log(
+      // eslint-disable-next-line max-len
+      `Filtered ${Object.keys(savedLeads).length} leads for service: ${serviceName}`
+    );
+
     return savedLeads;
   } catch (error) {
     console.error("Error filtering saved leads:", error);

@@ -55,14 +55,16 @@ async function createLead(
     const response = await api.addLead(data);
     const leadId: string = response.data.id;
 
+    console.log(`Created lead with ID: ${leadId}`);
+
     return leadId;
   } catch (err) {
     if (err instanceof Error) {
-      console.log("Create a lead failed", err.message);
+      console.error("Create a lead failed", err.message);
 
       throw new Error(`Create a lead failed: ${err.message}`);
     } else {
-      console.log("Create a lead failed with unknown error", err);
+      console.error("Create a lead failed with unknown error", err);
 
       throw new Error(
         `Create a lead failed with an unknown error: ${(err as any)?.message}`

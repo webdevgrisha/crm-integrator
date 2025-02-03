@@ -1,6 +1,6 @@
 import {
-  getDateFormats,
-  getISO8601DateFrom,
+  getDateFrom,
+  getDateTo,
   updateDateFrom,
 } from "../utils/dateFuncs";
 import {createPerson} from "../pipedrive/createPerson";
@@ -18,17 +18,27 @@ async function syncCallback24() {
   const serviceName = "callback24";
   const processedLeadsInfo: ProcessedLeadInfo[] = [];
 
+  console.log(`[${serviceName}] Sync started`);
+
   try {
     const {
-      isoDate: dateFrom,
-      timestamp: dateFromTimestamp,
-    } = await getISO8601DateFrom(serviceName);
-    const {currentTimestamp, dateToIsoFormat} = getDateFormats();
+      dateFromTimestamp,
+      dateFromIsoDate,
+    } = await getDateFrom(serviceName);
+    const {dateToTimestamp, dateToIsoFormat} = getDateTo();
+
+
+    console.log(
+      // eslint-disable-next-line max-len
+      `[${serviceName}] Fetching data from ${dateFromIsoDate} to ${dateToIsoFormat}`
+    );
 
     const callback24DataArr = await handleCallback24Data(
-      dateFrom,
+      dateFromIsoDate,
       dateToIsoFormat
     );
+
+    console.log(`[${serviceName}] Fetched ${callback24DataArr.length} records`);
 
     const savedLeads = await filterSavedLeads(serviceName, dateFromTimestamp);
 
@@ -43,6 +53,8 @@ async function syncCallback24() {
         utmCampaign,
       } = data;
 
+      console.log(`[${serviceName}] Processing lead with ID: ${id}`);
+
       const processedLeadInfo: ProcessedLeadInfo = {
         serviceLeadId: id,
         createdPersonId: null,
@@ -56,6 +68,10 @@ async function syncCallback24() {
 
       if (String(id) in savedLeads && savedLeads[id].createdPersonId) {
         personId = savedLeads[id].createdPersonId as number;
+
+        console.log(
+          `[${serviceName}] Found existing person with ID: ${personId}`
+        );
       } else {
         personId = await createPerson(
           phoneNumber,
@@ -84,11 +100,13 @@ async function syncCallback24() {
       await delay(200);
     }
 
-    await updateDateFrom(currentTimestamp, serviceName);
+    await updateDateFrom(dateToTimestamp, serviceName);
 
     await saveProcessedLeadInfo(processedLeadsInfo, serviceName);
 
     await resetSyncErrorState(serviceName);
+
+    console.log(`[${serviceName}] Sync completed successfully`);
   } catch (error) {
     await processSyncError(serviceName);
 

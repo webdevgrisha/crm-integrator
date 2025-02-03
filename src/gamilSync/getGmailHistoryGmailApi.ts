@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, camelcase, max-len */
-import { gmail_v1 } from "googleapis";
+import {gmail_v1} from "googleapis";
 
 
 async function getGmailHistoryGmailApi(

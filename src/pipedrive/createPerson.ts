@@ -37,14 +37,16 @@ async function createPerson(
     const response = await personApi.addPerson(data);
     const personId: number = response.data.id;
 
+    console.log(`Created new person with ID: ${personId}`);
+
     return personId;
   } catch (err) {
     if (err instanceof Error) {
-      console.log("Create a person failed", err.message);
+      console.error("Create a person failed", err.message);
 
       throw new Error(`Create a person failed: ${err.message}`);
     } else {
-      console.log("Create person failed with unknown error", err);
+      console.error("Create person failed with unknown error", err);
 
       throw new Error(
         `Create a person failed with an unknown error: ${(err as any)?.message}`

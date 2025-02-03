@@ -15,6 +15,8 @@ async function getSecret(secretName: string): Promise<string> {
     throw new Error("API key is not set.");
   }
 
+  console.log(`Successfully fetched secret: ${secretName}`);
+
   return secret;
 }
 

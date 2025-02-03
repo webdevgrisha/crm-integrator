@@ -64,7 +64,6 @@ async function getGmailHistoryImap(
 
       return internalDate > dateFromEpochTime && internalDate < dateToEpochTime;
     });
-
   } catch (err) {
     console.error("Error while fetching emails from IMAP:", err);
 
