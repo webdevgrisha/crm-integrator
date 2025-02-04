@@ -22,6 +22,9 @@ async function getGmailHistoryImap(
         tlsOptions: {
           servername: gmailInfo.host,
         },
+        connTimeout: 10000,
+        authTimeout: 10000,
+        keepalive: true,
       },
     };
 
