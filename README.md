@@ -44,7 +44,7 @@ This project requires several tools and configurations to run properly. Please e
 - **Pipedrive API key** for CRM integration (stored in Google Secret Manager)  
 - Additional dependencies listed in [functions/package.json](functions/package.json)
 
-Check the [installation notes](#getting-started) for detailed instructions on how to install and configure the project.
+Check the [installation notes](#installation) for detailed instructions on how to install and configure the project.
 
 ## Installation
 
