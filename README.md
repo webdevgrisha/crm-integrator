@@ -11,7 +11,6 @@ CRM Integrator is a project designed for automatically synchronizing leads from 
 6. [Usage](#advanced)
 7. [Contributing](#contributing)
 8. [License](#license)
-9. [Additional Resources](#additional-resources)
 
 ## Features
 - **Gmail Integration**: Retrieves and processes email leads from Gmail, then automatically creates records in Pipedrive via the API.
