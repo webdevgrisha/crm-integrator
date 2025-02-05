@@ -72,7 +72,7 @@ async function getGmailHistoryImap(
 
     throw new Error(`Failed to fetch emails from IMAP: ${err}`);
   } finally {
-    connection?.end();
+    await connection?.end();
 
     console.log("Connection closed.");
   }

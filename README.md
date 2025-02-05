@@ -1,13 +1,33 @@
 # CRM Integrator
 
-CRM Integrator is a project designed for automatically synchronizing leads from three sources: **Facebook**, **Callback24**, and **Gmail**, directly into **Pipedrive CRM**. This ensures that all incoming data is processed and recorded in the CRM, providing a centralized solution for managing leads and improving workflow efficiency.
+CRM Integrator is a project designed for automatically synchronizing leads from three sources: **Facebook**, **Callback24**, and **Gmail**, directly into **Pipedrive CRM**. This ensures that all incoming data is processed and recorded in the CRM, providing a centralized solution for managing leads and improving workflow efficiency. The synchronization occurs every hour.
 
 ## Table of Contents
 1. [Features](#features)
-2. [Getting Started](#getting-started)
-3. [Usage](#usage)
-4. [Contributing](#contributing)
-5. [License](#license)
+2. [Technologies Used](#technologies-used)
+3. [Requirements](#requirements)
+4. [Installation](#installation)
+5. [Usage](#usage)
+6. [Usage](#advanced)
+7. [Contributing](#contributing)
+8. [License](#license)
+9. [Additional Resources](#additional-resources)
+
+## Features
+- **Gmail Integration**: Retrieves and processes email leads from Gmail, then automatically creates records in Pipedrive via the API.
+- **Facebook Integration**: Retrieves and processes Facebook leads, then automatically creates records in Pipedrive.
+- **Callback24 Integration**: Retrieves and processes Callback24 leads, then automatically creates records in Pipedrive.
+- **Pipedrive Integration**: Centralizes all incoming data so new leads and persons are created seamlessly based on the transformed information from other services.
+- **Error Handling**: Includes robust error handling and logging to ensure data consistency and easier debugging.
+- **Scalability**: Designed to support high-volume data flows from multiple sources without performance degradation.
+- **Custom Protection Mechanism**: Implements a custom protection mechanism to handle potential errors that may occur during lead creation on the Pipedrive side, ensuring data integrity.
+- **Security**: Uses Google Secret Manager to securely store and manage sensitive information.
+
+## Technologies Used
+- **Node.js**: v18.x
+- **Firebase**: v13.x (firebase-admin), v6.x (firebase-functions)
+- **TypeScript**: v5.x
+- **Google Secret Manager**
 
 ## Requirements
 
@@ -26,43 +46,17 @@ This project requires several tools and configurations to run properly. Please e
 
 Check the [installation notes](#getting-started) for detailed instructions on how to install and configure the project.
 
-## Features
-- **Gmail Integration**: Retrieves and processes email leads from Gmail, then automatically creates records in Pipedrive via the API.  
-- **Facebook Integration**: Retrieves and processes Facebook leads, then automatically creates records in Pipedrive.  
-- **Callback24 Integration**: Retrieves and processes Callback24 leads, then automatically creates records in Pipedrive.  
-- **Pipedrive Integration**: Centralizes all incoming data so new leads and persons are created seamlessly based on the transformed information from other services.  
-- **Error Handling**: Includes robust error handling and logging to ensure data consistency and easier debugging.  
-- **Scalability**: Designed to support high-volume data flows from multiple sources without performance degradation.  
-- **Custom Protection Mechanism**: Implements a custom protection mechanism to handle potential errors that may occur during lead creation on the Pipedrive side, ensuring data integrity.  
-- **Security**: Uses Google Secret Manager to securely store and manage sensitive information.
+## Installation
 
-## Technologies Used
-- **Node.js**: v14.x
-- **Firebase**: v9.x
-- **TypeScript**: v4.x
-- **Google Secret Manager**
-
-## Getting Started
-
-### Prerequisites
-- Node.js
-- Firebase CLI
-- A Firebase project
-- Google Secret Manager
-
-### Installation
-1. Clone the repository:  
-    ```sh
-    git clone https://github.com/your-repo.git
-    cd your-repo/functions
-    ```
-2. Install dependencies:  
-    ```sh
-    npm install
-    ```
+For a Installation guide, please refer to the [Installation Guide](docs/installation.md).
 
 ## Usage
-Provide brief instructions on how to start or use the project. Include code or command examples when possible.
+
+For detailed instructions on how to start or use the project, please refer to the [Usage Guide](docs/usage.md).
+
+## Advanced
+
+For information on potential issues users may encounter during synchronization with Pipedrive, Gmail, and Facebook, please refer to the [Advanced Guide](docs/advanced.md).
 
 ## Contributing
 Contributions are welcome! Please open an issue first to discuss potential changes. Fork the repo, create your feature branch, then submit a pull request.

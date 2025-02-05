@@ -1,6 +1,6 @@
 import admin from "../init";
 import {ErrorData} from "./interfaces";
-import {sendErrorEmail} from "./sendErrorMail";
+import {sendErrorEmail, sendFixedEmail} from "./sendMails";
 
 
 const firestoreDb = admin.firestore();
@@ -81,6 +81,9 @@ async function resetSyncErrorState(serviceName: string): Promise<void> {
       isSendEmail: false,
       errorTime: null,
     });
+
+    // a елси произойдет ошибка при отправки письма ?
+    await sendFixedEmail(serviceName);
 
     console.log(`Reset sync error for service "${serviceName}" successfully.`);
   } catch (error) {
