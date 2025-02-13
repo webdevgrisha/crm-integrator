@@ -8,7 +8,7 @@ CRM Integrator is a project designed for automatically synchronizing leads from 
 3. [Requirements](#requirements)
 4. [Installation](#installation)
 5. [Usage](#usage)
-6. [Usage](#advanced)
+6. [Advanced](#advanced)
 7. [Contributing](#contributing)
 8. [License](#license)
 

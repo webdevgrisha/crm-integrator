@@ -1,5 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, camelcase, max-len */
+/* eslint-disable @typescript-eslint/no-explicit-any, camelcase */
 import {gmail_v1} from "googleapis";
+import { createFilterSearchQuery } from "./createFilterSearchQuery";
 
 
 async function getGmailHistoryGmailApi(
@@ -7,10 +8,7 @@ async function getGmailHistoryGmailApi(
   dateFrom: number,
   dateTo: number
 ) {
-  const subjectQuery = `subject: "Lead polecana oferta libertycar.pl" 
-    OR subject: "Lead sprowadzenie auta libertycar.pl" 
-    OR subject: "Kontakt libertycar.pl"
-    after:${dateFrom} before:${dateTo}`;
+  const subjectQuery = createFilterSearchQuery(dateFrom, dateTo);
 
   try {
     const messagesList = await gmail.users.messages.list({
@@ -19,7 +17,8 @@ async function getGmailHistoryGmailApi(
       q: subjectQuery,
     });
 
-    const messages: gmail_v1.Schema$Message[] = messagesList.data.messages || [];
+    const messages: gmail_v1.Schema$Message[] = 
+      messagesList.data.messages || [];
 
     if (messages.length === 0) {
       console.log("No messages found.");
@@ -30,7 +29,9 @@ async function getGmailHistoryGmailApi(
   } catch (error) {
     console.error("Error while fetching Gmail history:", error);
 
-    throw new Error("Failed to fetch Gmail history. Please check the API request or network.");
+    throw new Error(
+      "Failed to fetch Gmail history. Please check the API request or network."
+    );
   }
 }
 

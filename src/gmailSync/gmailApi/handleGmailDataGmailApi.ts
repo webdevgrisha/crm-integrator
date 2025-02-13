@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, camelcase */
 import {gmail_v1} from "googleapis";
 import {getGmailMessageBody} from "./getGmailMessageBody";
-import {extractGmailFields} from "./extractGmailFields";
+import {extractGmailFields} from "../extractGmailFields";
 import {getGmailHistoryGmailApi} from "./getGmailHistoryGmailApi";
 
 

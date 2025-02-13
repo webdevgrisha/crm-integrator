@@ -1,8 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, camelcase, max-len */
+/* eslint-disable @typescript-eslint/no-explicit-any, camelcase */
 import {gmail_v1} from "googleapis";
 
 
-function getGmailMessageBody(payload: gmail_v1.Schema$MessagePart): string {
+function getGmailMessageBody(
+  payload: gmail_v1.Schema$MessagePart
+): string {
   try {
     if (payload.body && payload.body.data) {
       return Buffer.from(payload.body.data, "base64").toString("utf-8");

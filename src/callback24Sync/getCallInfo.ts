@@ -1,32 +1,27 @@
-import axios from "axios";
 import {Callback24CallInfo} from "./interfaces";
 import {getSecret} from "../utils/getSecret";
+import { httpGet } from "../utils/http";
+import { callback24Config } from "../projectConfig";
 
 
 async function getCallInfo(callId: number) {
   try {
-    const proxy = JSON.parse(await getSecret("proxy"));
-    const apiKey = await getSecret("callback24-api");
+    const apiKey = await getSecret(callback24Config.apiKeyName);
 
-    const response = await axios.get("https://panel.callback24.io/api/v1/phoneCalls/getCallInfo", {
-      headers: {
-        "X-API-TOKEN": apiKey,
-        "Accept": "application/json",
-        "User-Agent": "MyApp/1.0",
-      },
-      params: {
-        call_id: callId,
-      },
-      proxy: {
-        protocol: "http",
-        host: proxy.host,
-        port: proxy.port,
-        auth: {
-          username: proxy.username,
-          password: proxy.password,
-        },
-      },
-    });
+    const headersConfig = {
+      "X-API-TOKEN": apiKey,
+    }
+
+    const paramsConfig = {
+      call_id: callId,
+    }
+
+    const response = await httpGet(
+      callback24Config.getCallInfoEndPoint,
+      headersConfig,
+      paramsConfig,
+      true
+    );
 
     const callInfo = response.data.data;
 
@@ -46,7 +41,6 @@ async function getCallInfo(callId: number) {
 
     return data;
   } catch (error) {
-    // или console.log ?
     console.error(`Error while retrieving data from getCallInfo: ${error}`);
 
     throw new Error(`Error while retrieving data from getCallInfo: ${error}`);

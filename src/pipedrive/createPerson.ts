@@ -1,3 +1,4 @@
+import { pipedriveConfig } from "../projectConfig";
 import {getSecret} from "../utils/getSecret";
 /* eslint-disable @typescript-eslint/no-var-requires */
 const pipedrive = require("pipedrive");
@@ -12,7 +13,9 @@ async function createPerson(
   callRealise = "Nie",
 ) {
   try {
-    const apiKey = await getSecret("pipedrive-api");
+    const apiKey = await getSecret(pipedriveConfig.apiKeyName);
+
+    const personConfig = pipedriveConfig.personConfig; 
 
     const defaultClient = new pipedrive.ApiClient();
     defaultClient.authentications.api_key.apiKey = apiKey;
@@ -20,15 +23,24 @@ async function createPerson(
     const fieldsApi = new pipedrive.PersonFieldsApi(defaultClient);
     const personApi = new pipedrive.PersonsApi(defaultClient);
 
-    const personDayField = await fieldsApi.getPersonField(28);
-    const personHourField = await fieldsApi.getPersonField(27);
-    const callStatusField = await fieldsApi.getPersonField(29);
+    // custom fields
+    const personDayField = await fieldsApi.getPersonField(
+      personConfig.customFields.personDayField
+    );
+    const personHourField = await fieldsApi.getPersonField(
+      personConfig.customFields.personHourField
+    );
+    const callStatusField = await fieldsApi.getPersonField(
+      personConfig.customFields.callStatusField
+    );
 
     const data = {
       name: name,
       phone: phone,
       email: email,
-      visible_to: 3,
+      // visibility groups
+      visible_to: personConfig.visible_to,
+      // custom fields
       [personDayField.data.key]: callData,
       [personHourField.data.key]: callTime,
       [callStatusField.data.key]: callRealise,

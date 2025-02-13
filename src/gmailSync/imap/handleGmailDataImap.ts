@@ -1,7 +1,7 @@
-import {simpleParser} from "mailparser";
-import {extractGmailFields} from "./extractGmailFields";
-import {getGmailHistoryImap} from "./getGmailHistoryImap";
-import {Message} from "imap-simple";
+import { simpleParser } from "mailparser";
+import { extractGmailFields } from "../extractGmailFields";
+import { getGmailHistoryImap } from "./getGmailHistoryImap";
+import { Message } from "imap-simple";
 
 
 async function processMessageImap(message: Message) {
@@ -59,4 +59,4 @@ async function handleGmailDataImap(
 }
 
 
-export {handleGmailDataImap};
+export { handleGmailDataImap };

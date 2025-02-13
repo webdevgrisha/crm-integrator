@@ -94,7 +94,7 @@ After executing these commands, the project structure will look as follows:
     │   ├── src/  
     │   │   ├── callback24Sync/  
     │   │   ├── facebookSync/  
-    │   │   ├── gamilSync/  
+    │   │   ├── gmailSync/  
     │   │   ├── pipedrive/  
     │   │   ├── utils/  
     │   │   ├── index.ts  

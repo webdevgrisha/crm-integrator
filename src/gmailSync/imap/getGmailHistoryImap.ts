@@ -1,7 +1,9 @@
 import Imap from "imap-simple";
 
-import {formatTimestampToDate} from "../utils/dateFuncs";
-import {getSecret} from "../utils/getSecret";
+import {formatTimestampToDate} from "../../utils/dateFuncs";
+import {getSecret} from "../../utils/getSecret";
+import { createSearchCriteria } from "./createSearchCriteria";
+import { gmailConfig } from "../../projectConfig";
 
 async function getGmailHistoryImap(
   dateFromEpochTime: number,
@@ -10,7 +12,9 @@ async function getGmailHistoryImap(
   let connection;
   let filteredMessages: Imap.Message[];
   try {
-    const gmailInfo = JSON.parse(await getSecret("gmail-imap"));
+    const gmailInfo = JSON.parse(
+      await getSecret(gmailConfig.imapSecretConfig.secretName)
+    );
 
     const config = {
       imap: {
@@ -22,9 +26,9 @@ async function getGmailHistoryImap(
         tlsOptions: {
           servername: gmailInfo.host,
         },
-        connTimeout: 10000,
-        authTimeout: 10000,
-        keepalive: true,
+        connTimeout: gmailConfig.imapSecretConfig.connTimeout,
+        authTimeout: gmailConfig.imapSecretConfig.authTimeout,
+        keepalive: gmailConfig.imapSecretConfig.keepalive,
       },
     };
 
@@ -35,19 +39,7 @@ async function getGmailHistoryImap(
 
     const formattedDate = formatTimestampToDate(dateFromEpochTime * 1000);
 
-    const searchCriteria = [
-      "ALL",
-      ["SINCE", formattedDate],
-      [
-        "OR",
-        ["HEADER", "SUBJECT", "Lead polecana oferta libertycar.pl"],
-        [
-          "OR",
-          ["HEADER", "SUBJECT", "Lead sprowadzenie auta libertycar.pl"],
-          ["HEADER", "SUBJECT", "Kontakt libertycar.pl"],
-        ],
-      ],
-    ];
+    const searchCriteria = createSearchCriteria(formattedDate);
 
     const fetchOptions = {
       bodies: [""],

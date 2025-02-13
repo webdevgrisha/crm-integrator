@@ -1,15 +1,10 @@
+import { pipedriveConfig } from "../projectConfig";
+import { ChannelNames } from "../types";
 import {getSecret} from "../utils/getSecret";
 /* eslint-disable @typescript-eslint/no-var-requires */
 const pipedrive = require("pipedrive");
 /* eslint-enable @typescript-eslint/no-var-requires */
 
-type ChannelNames = "gmail" | "callback24" | "facebook"
-
-const channelIds = {
-  "callback24": 34,
-  "gmail": 35,
-  "facebook": 36,
-};
 
 async function createLead(
   title: string,
@@ -22,7 +17,9 @@ async function createLead(
   carDescription: string | null = null,
 ) {
   try {
-    const apiKey = await getSecret("pipedrive-api");
+    const apiKey = await getSecret(pipedriveConfig.apiKeyName);
+
+    const leadConfig = pipedriveConfig.leadConfig; 
 
     const defaultClient = new pipedrive.ApiClient();
     defaultClient.authentications.api_key.apiKey = apiKey;
@@ -30,22 +27,31 @@ async function createLead(
     const fieldsApi = new pipedrive.DealFieldsApi(defaultClient);
     const api = new pipedrive.LeadsApi(defaultClient);
 
-    const leadCarField = await fieldsApi.getDealField(41);
-    const leadCarDescriptionField = await fieldsApi.getDealField(43);
-    const utmCampaignField = await fieldsApi.getDealField(40);
+    // custom fields
+    const leadCarField = await fieldsApi.getDealField(
+      leadConfig.customFields.leadCarField
+    );
+    const leadCarDescriptionField = await fieldsApi.getDealField(
+      leadConfig.customFields.leadCarDescriptionField
+    );
+    const utmCampaignField = await fieldsApi.getDealField(
+      leadConfig.customFields.utmCampaignField
+    );
 
-    const channelId = channelIds[channelName];
+    const channelId = leadConfig.channelIds[channelName];
 
     const data = {
       title: title,
       value: {
         amount: Number(budget),
-        currency: "PLN",
+        currency: leadConfig.currency,
       },
       person_id: personId,
       channel: channelId,
       channel_id: utmSource,
-      visible_to: "1",
+      // visibility groups
+      visible_to: leadConfig.visibleTo,
+      // custom fields
       [leadCarField.data.key]: carName,
       [leadCarDescriptionField.data.key]: carDescription,
       [utmCampaignField.data.key]: utmCampaign,

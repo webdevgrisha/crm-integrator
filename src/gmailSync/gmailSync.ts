@@ -1,31 +1,34 @@
-// import {google} from "googleapis";
 import {
   getDateFrom,
   getDateTo,
   updateDateFrom,
 } from "../utils/dateFuncs";
-import {createPerson} from "../pipedrive/createPerson";
-import {createLead} from "../pipedrive/createLeads";
-import {onSchedule} from "firebase-functions/v2/scheduler";
-import {delay} from "../utils/delay";
+import { createPerson } from "../pipedrive/createPerson";
+import { createLead } from "../pipedrive/createLeads";
+import { onSchedule } from "firebase-functions/v2/scheduler";
+import { delay } from "../utils/delay";
+
+// Gmail API
 // import {handleGmailDataGmailApi} from "./handleGmailDataGmailApi";
 // import {authorize} from "./authorize";
-import {processSyncError, resetSyncErrorState} from "../utils/handleSyncError";
-import {ProcessedLeadInfo} from "../interfaces";
-import {saveProcessedLeadInfo} from "../utils/saveLeadInfo";
-import {filterSavedLeads} from "../utils/filterSavedLeads";
-import {handleGmailDataImap} from "./handleGmailDataImap";
+// import {google} from "googleapis";
+
+// IMAP
+import { handleGmailDataImap } from "./imap/handleGmailDataImap";
+
+import { processSyncError, resetSyncErrorState } from "../utils/handleSyncError";
+import { ProcessedLeadInfo } from "../interfaces";
+import { saveProcessedLeadInfo } from "../utils/saveLeadInfo";
+import { filterSavedLeads } from "../utils/filterSavedLeads";
+import { gmailConfig } from "../projectConfig";
 
 async function syncGmail() {
-  const serviceName = "gmail";
+  const serviceName = gmailConfig.serviceName;
   const processedLeadsInfo: ProcessedLeadInfo[] = [];
 
   console.log(`[${serviceName}] Sync started`);
 
   try {
-    // const auth = await authorize();
-    // const gmail = google.gmail({version: "v1", auth});
-
     const {
       dateFromTimestamp,
       dateFromIsoDate,
@@ -42,12 +45,18 @@ async function syncGmail() {
       `[${serviceName}] Fetching data from ${dateFromIsoDate} to ${dateToIsoFormat}`
     );
 
+    // Gmail API
+    // const auth = await authorize();
+    // const gmail = google.gmail({version: "v1", auth});
+
     // const gmailDataArr = await handleGmailDataGmailApi(
     //   gmail,
     //   dateFromEpochTime - 1,
     //   dateToEpochTime + 1
     // );
 
+
+    // IMAP
     const gmailDataArr = await handleGmailDataImap(
       dateFromEpochTime - 1,
       dateToEpochTime + 1
@@ -82,7 +91,7 @@ async function syncGmail() {
 
       let personId: number;
 
-      if (String(id) in savedLeads && savedLeads[id].createdPersonId) {
+      if (savedLeads?.[id].createdPersonId) {
         personId = savedLeads[id].createdPersonId as number;
 
         // eslint-disable-next-line max-len
@@ -133,11 +142,11 @@ async function syncGmail() {
 
 const scheduleGmailSync = onSchedule(
   {
-    schedule: "5 * * * *",
-    timeZone: "Europe/Warsaw",
-    region: "europe-central2",
+    schedule: gmailConfig.schedule,
+    timeZone: gmailConfig.timeZone,
+    region: gmailConfig.region,
   },
   syncGmail
 );
 
-export {scheduleGmailSync};
+export { scheduleGmailSync };

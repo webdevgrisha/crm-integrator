@@ -1,20 +1,14 @@
 import * as bizSdk from "facebook-nodejs-business-sdk";
 import {getSecret} from "../utils/getSecret";
 import Cursor from "facebook-nodejs-business-sdk/src/cursor";
+import { facebookConfig } from "../projectConfig";
 
 const Ad = bizSdk.Ad;
 
 async function getFacebookLeadsData(dateFrom: number, dateTo: number) {
-  const facebookApi = JSON.parse(await getSecret("facebook-api"));
+  const facebookApi = JSON.parse(await getSecret(facebookConfig.apiKeyName));
 
   bizSdk.FacebookAdsApi.init(facebookApi.access_token);
-
-  const fields = [
-    "created_time",
-    "ad_name",
-    "campaign_name",
-    "field_data",
-  ];
 
   const params = {
     filtering: [
@@ -32,7 +26,11 @@ async function getFacebookLeadsData(dateFrom: number, dateTo: number) {
   };
 
   try {
-    const leadss = await new Ad(facebookApi.id).getLeads(fields, params);
+    // facebookApi.id is the identifier of the Facebook Lead Ads form.
+    // in this case the data is read from one form
+    const leadss = await new Ad(facebookApi.id).getLeads(
+      facebookConfig.formFields, params
+    );
 
     const allLeads = [];
     let currPage: Cursor | null = leadss;

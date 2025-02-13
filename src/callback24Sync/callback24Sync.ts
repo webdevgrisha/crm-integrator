@@ -12,10 +12,11 @@ import {processSyncError, resetSyncErrorState} from "../utils/handleSyncError";
 import {ProcessedLeadInfo} from "../interfaces";
 import {filterSavedLeads} from "../utils/filterSavedLeads";
 import {saveProcessedLeadInfo} from "../utils/saveLeadInfo";
+import { callback24Config } from "../projectConfig";
 
 
 async function syncCallback24() {
-  const serviceName = "callback24";
+  const serviceName = callback24Config.serviceName;
   const processedLeadsInfo: ProcessedLeadInfo[] = [];
 
   console.log(`[${serviceName}] Sync started`);
@@ -26,7 +27,6 @@ async function syncCallback24() {
       dateFromIsoDate,
     } = await getDateFrom(serviceName);
     const {dateToTimestamp, dateToIsoFormat} = getDateTo();
-
 
     console.log(
       // eslint-disable-next-line max-len
@@ -66,8 +66,8 @@ async function syncCallback24() {
 
       let personId: number;
 
-      if (String(id) in savedLeads && savedLeads[id].createdPersonId) {
-        personId = savedLeads[id].createdPersonId as number;
+      if (savedLeads[id].createdPersonId) {
+        personId = savedLeads?.[id].createdPersonId as number;
 
         console.log(
           `[${serviceName}] Found existing person with ID: ${personId}`
@@ -118,9 +118,9 @@ async function syncCallback24() {
 
 const scheduleCallback24Sync = onSchedule(
   {
-    schedule: "0 * * * *",
-    timeZone: "Europe/Warsaw",
-    region: "europe-central2",
+    schedule: callback24Config.schedule,
+    timeZone: callback24Config.timeZone,
+    region: callback24Config.region,
   },
   syncCallback24
 );

@@ -12,9 +12,10 @@ import {processSyncError, resetSyncErrorState} from "../utils/handleSyncError";
 import {ProcessedLeadInfo} from "../interfaces";
 import {filterSavedLeads} from "../utils/filterSavedLeads";
 import {saveProcessedLeadInfo} from "../utils/saveLeadInfo";
+import { facebookConfig } from "../projectConfig";
 
 async function syncFacebook() {
-  const serviceName = "facebook";
+  const serviceName = facebookConfig.serviceName;
   const processedLeadsInfo: ProcessedLeadInfo[] = [];
 
   console.log(`[${serviceName}] Sync started`);
@@ -70,7 +71,7 @@ async function syncFacebook() {
 
       let personId: number;
 
-      if (String(id) in savedLeads && savedLeads[id].createdPersonId) {
+      if (savedLeads?.[id].createdPersonId) {
         personId = savedLeads[id].createdPersonId as number;
 
         console.log(
@@ -124,9 +125,9 @@ async function syncFacebook() {
 
 const scheduleFacebookSync = onSchedule(
   {
-    schedule: "10 * * * *",
-    timeZone: "Europe/Warsaw",
-    region: "europe-central2",
+    schedule: facebookConfig.schedule,
+    timeZone: facebookConfig.timeZone,
+    region: facebookConfig.region,
   },
   syncFacebook
 );

@@ -2,6 +2,7 @@ import {FieldDataNameTranslation, LeadData, LeadInfo} from "./interfaces";
 
 // стоит ли добавить обработку ошибок?
 function reformatFacebookLeads(leads: any[]) {
+  // стоит ли вынести в конфиг ?
   const fieldDataNameTranslation: FieldDataNameTranslation = {
     "w_jakich_godzinach_można_się_kontaktować_?_": "callTime",
     "numer_telefonu": "phone",

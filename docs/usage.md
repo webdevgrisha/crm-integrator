@@ -44,7 +44,7 @@ This document describes the usage and structure of the CRM Integrator project. I
     │   │   │   ├── handleFacebookLeads.ts  
     │   │   │   ├── reformatFacebookLeads.ts  
     │   │   │   ├── facebookSync.ts  
-    │   │   ├── gamilSync/  
+    │   │   ├── gmailSync/  
     │   │   │   ├── authorize.ts  
     │   │   │   ├── extractGmailFields.ts  
     │   │   │   ├── getGmailHistoryGmailApi.ts  
