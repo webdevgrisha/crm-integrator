@@ -12,7 +12,7 @@ This document describes the usage and structure of the CRM Integrator project. I
 3. [Folder Overview](#folder-overview)
    - [callback24Sync](#callback24sync)
    - [facebookSync](#facebookSync)
-   - [gamilSync](#gamilSync)
+   - [gmailSync](#gmailSync)
    - [pipedrive](#pipedrive)
    - [utils](#utils)
    - [Other Files](#other-files)
@@ -27,7 +27,7 @@ This document describes the usage and structure of the CRM Integrator project. I
     │   ├── lib/  
     │   │   ├── callback24Sync/  
     │   │   ├── facebookSync/  
-    │   │   ├── gamilSync/  
+    │   │   ├── gmailSync/  
     │   │   ├── pipedrive/  
     │   │   ├── utils/  
     │   │   ├── index.js  
@@ -102,11 +102,11 @@ This document describes the usage and structure of the CRM Integrator project. I
 
 ### Gmail Sync
 
-- **Path**: `functions/src/gamilSync/gmailSync.ts`
+- **Path**: `functions/src/gmailSync/gmailSync.ts`
 - **Description**: Synchronizes leads from Gmail and creates records in Pipedrive.
 - **Usage**:
 ```ts
-  import { scheduleGmailSync } from "./gamilSync/gmailSync";
+  import { scheduleGmailSync } from "./gmailSync/gmailSync";
 ```
 
 ## Folder Overview
@@ -129,7 +129,7 @@ This document describes the usage and structure of the CRM Integrator project. I
   - `reformatFacebookLeads.ts`: Reformats Facebook leads data.
   - `facebookSync.ts`: Main file for synchronizing data from Facebook.
 
-### gamilSync
+### gmailSync
 
 - **Description**: Contains all the files related to synchronizing leads from Gmail and creating records in Pipedrive.
 - **Files**:

@@ -16,11 +16,10 @@ async function getDateFrom(docId: string) {
 
     const data = doc.data();
 
-    if (!(data && data.date)) {
-      throw Error("date not exist");
-    }
+    const timestamp: Timestamp = data?.date;
 
-    const timestamp: Timestamp = data.date;
+    if (!timestamp) throw Error("date not exist");
+
     const isoFormat: string = timestamp.toDate().toISOString();
     const epochTime: number = Math.floor(
       timestamp.toDate().getTime() / 1000

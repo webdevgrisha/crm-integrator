@@ -1,6 +1,6 @@
 import admin from "../init";
-import {ErrorData} from "./interfaces";
-import {sendErrorEmail, sendFixedEmail} from "./sendMails";
+import { ErrorData } from "./interfaces";
+import { sendEMail } from "./sendEmails";
 
 
 const firestoreDb = admin.firestore();
@@ -9,41 +9,33 @@ async function processSyncError(serviceName: string): Promise<void> {
   try {
     const docRef = firestoreDb.collection("error_handle").doc(serviceName);
 
-    // не уверен, что тут нужна тарназакция
-    await firestoreDb.runTransaction(async (transaction) => {
-      const doc = await docRef.get();
+    // убрал транзакцию
+    const doc = await docRef.get();
 
-      if (!doc.exists) {
-        throw Error(`Document for service "${serviceName}" does not exist.`);
-      }
+    if (!doc.exists) {
+      throw Error(`Document for service "${serviceName}" does not exist.`);
+    }
 
-      const data = doc.data() as ErrorData | undefined;
+    const data = doc.data() as ErrorData | undefined;
 
-      if (!data) {
-        throw Error(`Data for service "${serviceName}" does not exist.`);
-      }
+    if (!data) {
+      throw Error(`Data for service "${serviceName}" does not exist.`);
+    }
 
-      // логи выглядят странно (с отправкой ошибки на почту)
-      if (!data.isError || !data.isSendEmail) {
-        const currentTimestamp = admin.firestore.Timestamp.now();
-        let isEmailSend = false;
+    // логика выглядят странно (с отправкой ошибки на почту)
+    if (!data.isError) {
+      const currentTimestamp = admin.firestore.Timestamp.now();
 
-        try {
-          sendErrorEmail(serviceName);
-          isEmailSend = true;
-        } catch (emailError) {
-          console.error(
-            `Error sending email for service "${serviceName}":`, emailError
-          );
-        }
+      // то есть если упадет отправка сообщения данные не будут
+      // обновлены 
+      sendEMail(serviceName, true);
 
-        transaction.update(docRef, {
-          isError: true,
-          isSendEmail: isEmailSend,
-          errorTime: currentTimestamp,
-        });
-      }
-    });
+      docRef.update({
+        isError: true,
+        isSendEmail: true,
+        errorTime: currentTimestamp,
+      });
+    }
 
     console.log(
       `Handled sync error for service "${serviceName}" successfully.`
@@ -83,7 +75,7 @@ async function resetSyncErrorState(serviceName: string): Promise<void> {
     });
 
     // a елси произойдет ошибка при отправки письма ?
-    await sendFixedEmail(serviceName);
+    await sendEMail(serviceName, false);
 
     console.log(`Reset sync error for service "${serviceName}" successfully.`);
   } catch (error) {
@@ -95,4 +87,4 @@ async function resetSyncErrorState(serviceName: string): Promise<void> {
   }
 }
 
-export {processSyncError, resetSyncErrorState};
+export { processSyncError, resetSyncErrorState };

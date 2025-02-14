@@ -85,7 +85,7 @@ After executing these commands, the project structure will look as follows:
     │   ├── lib/  
     │   │   ├── callback24Sync/  
     │   │   ├── facebookSync/  
-    │   │   ├── gamilSync/  
+    │   │   ├── gmailSync/  
     │   │   ├── pipedrive/  
     │   │   ├── utils/  
     │   │   ├── index.js  

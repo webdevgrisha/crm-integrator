@@ -1,14 +1,14 @@
-import {FieldDataNameTranslation, LeadData, LeadInfo} from "./interfaces";
+import {FieldDataNameTranslation, LeadData, LeadDataNames, LeadInfo} from "./interfaces";
 
 // стоит ли добавить обработку ошибок?
 function reformatFacebookLeads(leads: any[]) {
   // стоит ли вынести в конфиг ?
   const fieldDataNameTranslation: FieldDataNameTranslation = {
-    "w_jakich_godzinach_można_się_kontaktować_?_": "callTime",
-    "numer_telefonu": "phone",
-    "imię": "name",
-    "email": "email",
-    "jakiego_samochodu_szukasz_?": "carName",
+    [LeadDataNames.ContactHours]: "callTime",
+    [LeadDataNames.PhoneNumber]: "phone",
+    [LeadDataNames.PersonName]: "name",
+    [LeadDataNames.Email]: "email",
+    [LeadDataNames.CarName]: "carName",
   };
 
   const reformatLeads = leads.map((lead: LeadData) => {
@@ -21,7 +21,7 @@ function reformatFacebookLeads(leads: any[]) {
     };
 
     lead.field_data.forEach((field) => {
-      const leadInfoKey = fieldDataNameTranslation[field.name];
+      const leadInfoKey = fieldDataNameTranslation[field.name] as keyof LeadInfo;
       leadInfo[leadInfoKey] = field.values[0];
     });
 

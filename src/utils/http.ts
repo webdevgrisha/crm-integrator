@@ -1,5 +1,6 @@
 import axios from "axios";
-import {getSecret} from "../utils/getSecret";
+import { getSecret } from "../utils/getSecret";
+import { utilsConfig } from "../projectConfig";
 
 interface HttpHeaders {
     [key: string]: string
@@ -15,10 +16,14 @@ async function httpGet(
     params: HttpParams,
     isProxy: boolean = false
 ) {
-    const proxy = JSON.parse(await getSecret("proxy"));
+    const proxyInitConfig = utilsConfig.proxyConfig;
+
+    const proxy = JSON.parse(
+        await getSecret(proxyInitConfig.secretName)
+    );
 
     const proxyConfig = {
-        protocol: "http",
+        protocol: proxyInitConfig.protocol,
         host: proxy.host,
         port: proxy.port,
         auth: {

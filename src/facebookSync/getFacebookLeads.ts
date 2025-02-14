@@ -28,22 +28,17 @@ async function getFacebookLeadsData(dateFrom: number, dateTo: number) {
   try {
     // facebookApi.id is the identifier of the Facebook Lead Ads form.
     // in this case the data is read from one form
-    const leadss = await new Ad(facebookApi.id).getLeads(
+    let leads: Cursor | null = await new Ad(facebookApi.id).getLeads(
       facebookConfig.formFields, params
     );
 
     const allLeads = [];
-    let currPage: Cursor | null = leadss;
 
-    do {
-      allLeads.push(...leadss);
-
-      if (currPage.hasNext()) {
-        currPage = await currPage.next();
-      } else {
-        currPage = null;
-      }
-    } while (currPage);
+    while(leads) {
+      allLeads.push(...leads);
+      
+      leads = leads.hasNext() ? await leads.next() : null;
+    }
 
     return allLeads;
   } catch (error) {
