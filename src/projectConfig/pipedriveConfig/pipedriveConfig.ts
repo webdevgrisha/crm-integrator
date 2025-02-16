@@ -1,5 +1,5 @@
-import { leadConfig, LeadConfig } from "./leadConfig";
-import { personConfig, PersonConfig } from "./personConfig";
+import {leadConfig, LeadConfig} from "./leadConfig";
+import {personConfig, PersonConfig} from "./personConfig";
 
 interface PipedriveConfig {
     apiKeyName: string;
@@ -8,11 +8,11 @@ interface PipedriveConfig {
 }
 
 const pipedriveConfig: PipedriveConfig = {
-    apiKeyName: "pipedrive-api",
-    leadConfig,
-    personConfig,
-}
+  apiKeyName: "pipedrive-api",
+  leadConfig,
+  personConfig,
+};
 
 export {
-    pipedriveConfig
-}
+  pipedriveConfig,
+};

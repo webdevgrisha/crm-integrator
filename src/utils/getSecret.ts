@@ -1,5 +1,5 @@
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
-import { utilsConfig } from "../projectConfig";
+import {utilsConfig} from "../projectConfig";
 
 const projectId = utilsConfig.secretManagerConfig.projectId;
 const versionId = utilsConfig.secretManagerConfig.versionId;

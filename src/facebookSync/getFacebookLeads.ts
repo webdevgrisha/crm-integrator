@@ -1,7 +1,7 @@
 import * as bizSdk from "facebook-nodejs-business-sdk";
 import {getSecret} from "../utils/getSecret";
 import Cursor from "facebook-nodejs-business-sdk/src/cursor";
-import { facebookConfig } from "../projectConfig";
+import {facebookConfig} from "../projectConfig";
 
 const Ad = bizSdk.Ad;
 
@@ -34,9 +34,9 @@ async function getFacebookLeadsData(dateFrom: number, dateTo: number) {
 
     const allLeads = [];
 
-    while(leads) {
+    while (leads) {
       allLeads.push(...leads);
-      
+
       leads = leads.hasNext() ? await leads.next() : null;
     }
 

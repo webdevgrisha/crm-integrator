@@ -12,7 +12,7 @@ import {processSyncError, resetSyncErrorState} from "../utils/handleSyncError";
 import {ProcessedLeadInfo} from "../interfaces";
 import {filterSavedLeads} from "../utils/filterSavedLeads";
 import {saveProcessedLeadInfo} from "../utils/saveLeadInfo";
-import { facebookConfig } from "../projectConfig";
+import {facebookConfig} from "../projectConfig";
 
 async function syncFacebook() {
   const serviceName = facebookConfig.serviceName;

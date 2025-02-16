@@ -1,7 +1,7 @@
 import {Callback24CallInfo} from "./interfaces";
 import {getSecret} from "../utils/getSecret";
-import { httpGet } from "../utils/http";
-import { callback24Config } from "../projectConfig";
+import {httpGet} from "../utils/http";
+import {callback24Config} from "../projectConfig";
 
 
 async function getCallInfo(callId: number) {
@@ -10,11 +10,11 @@ async function getCallInfo(callId: number) {
 
     const headersConfig = {
       "X-API-TOKEN": apiKey,
-    }
+    };
 
     const paramsConfig = {
       call_id: callId,
-    }
+    };
 
     const response = await httpGet(
       callback24Config.getCallInfoEndPoint,

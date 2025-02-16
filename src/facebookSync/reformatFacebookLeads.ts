@@ -1,4 +1,9 @@
-import {FieldDataNameTranslation, LeadData, LeadDataNames, LeadInfo} from "./interfaces";
+import {
+  FieldDataNameTranslation,
+  LeadData,
+  LeadDataNames,
+  LeadInfo,
+} from "./interfaces";
 
 // стоит ли добавить обработку ошибок?
 function reformatFacebookLeads(leads: any[]) {
@@ -21,7 +26,8 @@ function reformatFacebookLeads(leads: any[]) {
     };
 
     lead.field_data.forEach((field) => {
-      const leadInfoKey = fieldDataNameTranslation[field.name] as keyof LeadInfo;
+      const leadInfoKey =
+        fieldDataNameTranslation[field.name] as keyof LeadInfo;
       leadInfo[leadInfoKey] = field.values[0];
     });
 

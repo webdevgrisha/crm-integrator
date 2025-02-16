@@ -1,4 +1,4 @@
-import { pipedriveConfig } from "../projectConfig";
+import {pipedriveConfig} from "../projectConfig";
 import {getSecret} from "../utils/getSecret";
 /* eslint-disable @typescript-eslint/no-var-requires */
 const pipedrive = require("pipedrive");
@@ -15,7 +15,7 @@ async function createPerson(
   try {
     const apiKey = await getSecret(pipedriveConfig.apiKeyName);
 
-    const personConfig = pipedriveConfig.personConfig; 
+    const personConfig = pipedriveConfig.personConfig;
 
     const defaultClient = new pipedrive.ApiClient();
     defaultClient.authentications.api_key.apiKey = apiKey;

@@ -14,6 +14,7 @@ This document describes the usage and structure of the CRM Integrator project. I
    - [facebookSync](#facebookSync)
    - [gmailSync](#gmailSync)
    - [pipedrive](#pipedrive)
+   - [Project Config](#project-config)
    - [utils](#utils)
    - [Other Files](#other-files)
 4. [Disabling Unnecessary Functions](#disabling-unnecessary-functions)
@@ -24,10 +25,15 @@ This document describes the usage and structure of the CRM Integrator project. I
     .  
     ├── .firebase/  
     ├── functions/  
+    │   ├── docs/  
+    │   │   ├── advanced.md  
+    │   │   ├── installation.md  
+    │   │   ├── secrets.md  
+    │   │   ├── usage.md  
     │   ├── lib/  
     │   │   ├── callback24Sync/  
     │   │   ├── facebookSync/  
-    │   │   ├── gmailSync/  
+    │   │   ├── gamilSync/  
     │   │   ├── pipedrive/  
     │   │   ├── utils/  
     │   │   ├── index.js  
@@ -44,7 +50,7 @@ This document describes the usage and structure of the CRM Integrator project. I
     │   │   │   ├── handleFacebookLeads.ts  
     │   │   │   ├── reformatFacebookLeads.ts  
     │   │   │   ├── facebookSync.ts  
-    │   │   ├── gmailSync/  
+    │   │   ├── gamilSync/  
     │   │   │   ├── authorize.ts  
     │   │   │   ├── extractGmailFields.ts  
     │   │   │   ├── getGmailHistoryGmailApi.ts  
@@ -54,7 +60,14 @@ This document describes the usage and structure of the CRM Integrator project. I
     │   │   │   ├── gmailSync.ts  
     │   │   ├── pipedrive/  
     │   │   │   ├── createLeads.ts  
-    │   │   │   ├── createPerson.ts  
+    │   │   │   ├── createPerson.ts
+    │   │   ├── projectConfig/  
+    │   │   ├── callback24Config.ts  
+    │   │   ├── facebookConfig.ts  
+    │   │   ├── gmailConfig.ts  
+    │   │   ├── pipedriveConfig.ts  
+    │   │   │   ├── createLeadsConfig.ts  
+    │   │   │   ├── createPersonConfig.ts  
     │   │   ├── utils/  
     │   │   │   ├── dateFuncs.ts  
     │   │   │   ├── delay.ts  
@@ -65,19 +78,19 @@ This document describes the usage and structure of the CRM Integrator project. I
     │   │   │   ├── filterSavedLeads.ts  
     │   │   ├── index.ts  
     │   │   ├── init.ts  
-    │   │   ├── interfaces.ts
+    │   │   ├── interfaces.ts  
     │   ├── .eslintrc.js  
     │   ├── package.json  
     │   ├── tsconfig.json  
     │   ├── tsconfig.dev.json  
-    ├── public/  
-    │   ├── index.html  
-    │   ├── privacy-policy.html  
-    │   ├── terms-of-service.html  
+    │   ├── .gitignore  
+    │   ├── README.md  
+    │   ├── public/  
+    │   │   ├── index.html  
+    │   │   ├── privacy-policy.html  
+    │   │   ├── terms-of-service.html  
     ├── .firebaserc  
-    ├── .gitignore  
-    ├── firebase.json  
-    └── README.md  
+    ├── firebase.json    
 
 ## Functions Overview
 
@@ -147,6 +160,18 @@ This document describes the usage and structure of the CRM Integrator project. I
 - **Files**:
   - `createLeads.ts`: Creates leads in Pipedrive.
   - `createPerson.ts`: Creates persons in Pipedrive.
+
+### projectConfig
+
+- **Description**: Contains configuration files for various services used in the project.
+- **Files**:
+  - `callback24Config.ts`: Configuration for Callback24 integration.
+  - `facebookConfig.ts`: Configuration for Facebook integration.
+  - `gmailConfig.ts`: Configuration for Gmail integration.
+  - `pipedriveConfig.ts`: Configuration for Pipedrive integration.
+  - `createLeadsConfig.ts`: Configuration for creating leads in Pipedrive.
+  - `createPersonConfig.ts`: Configuration for creating persons in Pipedrive.
+  - `utilsConfig.ts`: Configuration for utility functions used across the project.
 
 ### utils
 

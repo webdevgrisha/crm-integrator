@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { getSecret } from "./getSecret";
+import {getSecret} from "./getSecret";
 
 function getErrorEmailOptions(serviceName: string, time: string) {
   const transportOptions = {
@@ -45,7 +45,7 @@ async function sendEMail(serviceName: string, isError: boolean) {
     const info = await transporter.sendMail({
       from: gmailInfo.user,
       to: gmailInfo.receiver,
-      ...transportOptions
+      ...transportOptions,
     });
 
     console.log("Email sent successfully:", info.messageId);
@@ -61,4 +61,4 @@ async function sendEMail(serviceName: string, isError: boolean) {
   }
 }
 
-export { sendEMail };
+export {sendEMail};

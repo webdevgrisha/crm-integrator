@@ -1,6 +1,6 @@
 import admin from "../init";
-import { ErrorData } from "./interfaces";
-import { sendEMail } from "./sendEmails";
+import {ErrorData} from "./interfaces";
+import {sendEMail} from "./sendEmails";
 
 
 const firestoreDb = admin.firestore();
@@ -27,7 +27,7 @@ async function processSyncError(serviceName: string): Promise<void> {
       const currentTimestamp = admin.firestore.Timestamp.now();
 
       // то есть если упадет отправка сообщения данные не будут
-      // обновлены 
+      // обновлены
       sendEMail(serviceName, true);
 
       docRef.update({
@@ -87,4 +87,4 @@ async function resetSyncErrorState(serviceName: string): Promise<void> {
   }
 }
 
-export { processSyncError, resetSyncErrorState };
+export {processSyncError, resetSyncErrorState};

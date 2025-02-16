@@ -3,10 +3,10 @@ import {
   getDateTo,
   updateDateFrom,
 } from "../utils/dateFuncs";
-import { createPerson } from "../pipedrive/createPerson";
-import { createLead } from "../pipedrive/createLeads";
-import { onSchedule } from "firebase-functions/v2/scheduler";
-import { delay } from "../utils/delay";
+import {createPerson} from "../pipedrive/createPerson";
+import {createLead} from "../pipedrive/createLeads";
+import {onSchedule} from "firebase-functions/v2/scheduler";
+import {delay} from "../utils/delay";
 
 // Gmail API
 // import {handleGmailDataGmailApi} from "./handleGmailDataGmailApi";
@@ -14,13 +14,13 @@ import { delay } from "../utils/delay";
 // import {google} from "googleapis";
 
 // IMAP
-import { handleGmailDataImap } from "./imap/handleGmailDataImap";
+import {handleGmailDataImap} from "./imap/handleGmailDataImap";
 
-import { processSyncError, resetSyncErrorState } from "../utils/handleSyncError";
-import { ProcessedLeadInfo } from "../interfaces";
-import { saveProcessedLeadInfo } from "../utils/saveLeadInfo";
-import { filterSavedLeads } from "../utils/filterSavedLeads";
-import { gmailConfig } from "../projectConfig";
+import {processSyncError, resetSyncErrorState} from "../utils/handleSyncError";
+import {ProcessedLeadInfo} from "../interfaces";
+import {saveProcessedLeadInfo} from "../utils/saveLeadInfo";
+import {filterSavedLeads} from "../utils/filterSavedLeads";
+import {gmailConfig} from "../projectConfig";
 
 async function syncGmail() {
   const serviceName = gmailConfig.serviceName;
@@ -149,4 +149,4 @@ const scheduleGmailSync = onSchedule(
   syncGmail
 );
 
-export { scheduleGmailSync };
+export {scheduleGmailSync};

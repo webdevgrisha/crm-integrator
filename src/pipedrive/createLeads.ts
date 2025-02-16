@@ -1,5 +1,5 @@
-import { pipedriveConfig } from "../projectConfig";
-import { ChannelNames } from "../types";
+import {pipedriveConfig} from "../projectConfig";
+import {ChannelNames} from "../types";
 import {getSecret} from "../utils/getSecret";
 /* eslint-disable @typescript-eslint/no-var-requires */
 const pipedrive = require("pipedrive");
@@ -19,7 +19,7 @@ async function createLead(
   try {
     const apiKey = await getSecret(pipedriveConfig.apiKeyName);
 
-    const leadConfig = pipedriveConfig.leadConfig; 
+    const leadConfig = pipedriveConfig.leadConfig;
 
     const defaultClient = new pipedrive.ApiClient();
     defaultClient.authentications.api_key.apiKey = apiKey;

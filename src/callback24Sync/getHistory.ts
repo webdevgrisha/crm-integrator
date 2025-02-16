@@ -1,7 +1,7 @@
-import { Callback24ClientInfo } from "./interfaces";
-import { getSecret } from "../utils/getSecret";
-import { httpGet } from "../utils/http";
-import { callback24Config } from "../projectConfig";
+import {Callback24ClientInfo} from "./interfaces";
+import {getSecret} from "../utils/getSecret";
+import {httpGet} from "../utils/http";
+import {callback24Config} from "../projectConfig";
 
 
 async function getHistory(dateFrom: string, dateTo: string) {
@@ -11,12 +11,12 @@ async function getHistory(dateFrom: string, dateTo: string) {
     const headersConfig = {
       "X-API-TOKEN": apiKey,
       "Content-Type": "application/json",
-    }
+    };
 
     const paramsConfig = {
       date_from: dateFrom,
       date_to: dateTo,
-    }
+    };
 
     const response = await httpGet(
       callback24Config.getHistoryEndPoint,
@@ -59,4 +59,4 @@ async function getHistory(dateFrom: string, dateTo: string) {
   }
 }
 
-export { getHistory };
+export {getHistory};

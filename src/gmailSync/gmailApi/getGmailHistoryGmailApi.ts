@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, camelcase */
 import {gmail_v1} from "googleapis";
-import { createFilterSearchQuery } from "./createFilterSearchQuery";
+import {createFilterSearchQuery} from "./createFilterSearchQuery";
 
 
 async function getGmailHistoryGmailApi(
@@ -17,7 +17,7 @@ async function getGmailHistoryGmailApi(
       q: subjectQuery,
     });
 
-    const messages: gmail_v1.Schema$Message[] = 
+    const messages: gmail_v1.Schema$Message[] =
       messagesList.data.messages || [];
 
     if (messages.length === 0) {

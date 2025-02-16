@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, camelcase, max-len */
 import {google} from "googleapis";
 import {getSecret} from "../../utils/getSecret";
-import { gmailConfig } from "../../projectConfig";
+import {gmailConfig} from "../../projectConfig";
 
 async function authorize(): Promise<any> {
   try {

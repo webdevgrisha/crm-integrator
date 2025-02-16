@@ -12,7 +12,7 @@ import {processSyncError, resetSyncErrorState} from "../utils/handleSyncError";
 import {ProcessedLeadInfo} from "../interfaces";
 import {filterSavedLeads} from "../utils/filterSavedLeads";
 import {saveProcessedLeadInfo} from "../utils/saveLeadInfo";
-import { callback24Config } from "../projectConfig";
+import {callback24Config} from "../projectConfig";
 
 
 async function syncCallback24() {

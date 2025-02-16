@@ -1,7 +1,7 @@
 // create lead API Docs
 // https://developers.pipedrive.com/docs/api/v1/Leads
 
-import { CustomFields, VisibilityGroup } from "./types";
+import {CustomFields, VisibilityGroup} from "./types";
 
 type ChannelNames = "callback24" | "gmail" | "facebook";
 type ChannelIds = Record<ChannelNames, number>;

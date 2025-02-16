@@ -2,8 +2,8 @@ import Imap from "imap-simple";
 
 import {formatTimestampToDate} from "../../utils/dateFuncs";
 import {getSecret} from "../../utils/getSecret";
-import { createSearchCriteria } from "./createSearchCriteria";
-import { gmailConfig } from "../../projectConfig";
+import {createSearchCriteria} from "./createSearchCriteria";
+import {gmailConfig} from "../../projectConfig";
 
 async function getGmailHistoryImap(
   dateFromEpochTime: number,

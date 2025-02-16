@@ -81,7 +81,12 @@ After executing these commands, the project structure will look as follows:
 
     .  
     ├── .firebase/  
-    ├── functions/  
+    ├── functions/ 
+    ├── docs/  
+    │   │   ├── advanced.md  
+    │   │   ├── installation.md  
+    │   │   ├── secrets.md  
+    │   │   ├── usage.md
     │   ├── lib/  
     │   │   ├── callback24Sync/  
     │   │   ├── facebookSync/  
@@ -96,6 +101,7 @@ After executing these commands, the project structure will look as follows:
     │   │   ├── facebookSync/  
     │   │   ├── gmailSync/  
     │   │   ├── pipedrive/  
+    │   │   ├── projectConfig/
     │   │   ├── utils/  
     │   │   ├── index.ts  
     │   │   ├── init.ts  

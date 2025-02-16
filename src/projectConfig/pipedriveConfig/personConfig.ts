@@ -1,7 +1,7 @@
 // create persons API Docs
 // https://developers.pipedrive.com/docs/api/v1/Persons
 
-import { CustomFields, VisibilityGroup } from "./types";
+import {CustomFields, VisibilityGroup} from "./types";
 
 interface PersonConfig {
     visible_to: VisibilityGroup,
@@ -21,9 +21,9 @@ const personConfig: PersonConfig = {
 
 
 export {
-    personConfig,
+  personConfig,
 };
 
 export type {
-    PersonConfig,
+  PersonConfig,
 };
