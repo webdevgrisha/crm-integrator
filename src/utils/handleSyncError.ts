@@ -1,6 +1,6 @@
 import admin from "../init";
 import {ErrorData} from "./interfaces";
-import {sendEMail} from "./sendEmails";
+import {sendEmail} from "./sendEmails";
 
 
 const firestoreDb = admin.firestore();
@@ -9,7 +9,6 @@ async function processSyncError(serviceName: string): Promise<void> {
   try {
     const docRef = firestoreDb.collection("error_handle").doc(serviceName);
 
-    // убрал транзакцию
     const doc = await docRef.get();
 
     if (!doc.exists) {
@@ -23,16 +22,14 @@ async function processSyncError(serviceName: string): Promise<void> {
     }
 
     // логика выглядят странно (с отправкой ошибки на почту)
-    if (!data.isError) {
+    if (!data.isError || !data.isSendEmail) {
       const currentTimestamp = admin.firestore.Timestamp.now();
 
-      // то есть если упадет отправка сообщения данные не будут
-      // обновлены
-      sendEMail(serviceName, true);
+      const sendStatus = await sendEmail(serviceName, true);
 
       docRef.update({
         isError: true,
-        isSendEmail: true,
+        isSendEmail: sendStatus,
         errorTime: currentTimestamp,
       });
     }
@@ -66,16 +63,16 @@ async function resetSyncErrorState(serviceName: string): Promise<void> {
       throw Error(`Data for service "${serviceName}" does not exist.`);
     }
 
-    if (!data.isError) return;
+    if (!data.isError && !data.isSendEmail) return;
+
+    const sendStatus = await sendEmail(serviceName, false);
 
     await docRef.update({
       isError: false,
-      isSendEmail: false,
+      isSendEmail: !sendStatus,
       errorTime: null,
     });
-
-    // a елси произойдет ошибка при отправки письма ?
-    await sendEMail(serviceName, false);
+    
 
     console.log(`Reset sync error for service "${serviceName}" successfully.`);
   } catch (error) {

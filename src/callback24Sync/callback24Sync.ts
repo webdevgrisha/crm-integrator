@@ -3,16 +3,13 @@ import {
   getDateTo,
   updateDateFrom,
 } from "../utils/dateFuncs";
-import {createPerson} from "../pipedrive/createPerson";
-import {createLead} from "../pipedrive/createLeads";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {handleCallback24Data} from "./handleCallback24Data";
-import {delay} from "../utils/delay";
 import {processSyncError, resetSyncErrorState} from "../utils/handleSyncError";
 import {ProcessedLeadInfo} from "../interfaces";
-import {filterSavedLeads} from "../utils/filterSavedLeads";
 import {saveProcessedLeadInfo} from "../utils/saveLeadInfo";
 import {callback24Config} from "../projectConfig";
+import { processLeads } from "../pipedrive/processLeads";
 
 
 async function syncCallback24() {
@@ -21,6 +18,8 @@ async function syncCallback24() {
 
   console.log(`[${serviceName}] Sync started`);
 
+  // более того, весь блок try, catch одинаков в каджой функции, за исключением
+  // такого типа функций handleCallback24Data
   try {
     const {
       dateFromTimestamp,
@@ -40,65 +39,9 @@ async function syncCallback24() {
 
     console.log(`[${serviceName}] Fetched ${callback24DataArr.length} records`);
 
-    const savedLeads = await filterSavedLeads(serviceName, dateFromTimestamp);
-
-    for (const data of callback24DataArr) {
-      const {
-        id,
-        phoneNumber,
-        hasRealised,
-        callAtData,
-        callAtTime,
-        utmSource,
-        utmCampaign,
-      } = data;
-
-      console.log(`[${serviceName}] Processing lead with ID: ${id}`);
-
-      const processedLeadInfo: ProcessedLeadInfo = {
-        serviceLeadId: id,
-        createdPersonId: null,
-        createdLeadId: null,
-        dateFrom: dateFromTimestamp,
-      };
-
-      processedLeadsInfo.push(processedLeadInfo);
-
-      let personId: number;
-
-      if (savedLeads[id].createdPersonId) {
-        personId = savedLeads?.[id].createdPersonId as number;
-
-        console.log(
-          `[${serviceName}] Found existing person with ID: ${personId}`
-        );
-      } else {
-        personId = await createPerson(
-          phoneNumber,
-          null,
-          undefined,
-          callAtData,
-          callAtTime,
-          hasRealised
-        );
-      }
-
-      processedLeadInfo.createdPersonId = personId;
-      await delay(200);
-
-      const leadTitle = `${phoneNumber} - ${serviceName}`;
-
-      const leadId = await createLead(
-        leadTitle,
-        personId,
-        serviceName,
-        utmSource,
-        utmCampaign
-      );
-
-      processedLeadInfo.createdLeadId = leadId;
-      await delay(200);
-    }
+    // если четрые функции внизу повторяеться в каждой функции,
+    //  стоит ли ее вынести в отдельную функцию
+    await processLeads(serviceName,  dateFromTimestamp, callback24DataArr);
 
     await updateDateFrom(dateToTimestamp, serviceName);
 

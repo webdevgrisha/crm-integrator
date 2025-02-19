@@ -37,7 +37,7 @@ async function getHistory(dateFrom: string, dateTo: string) {
       return {
         id: data.id,
         hasRealised: hasRealised,
-        phoneNumber: data.phone_number,
+        phone: data.phone_number,
       };
     });
 

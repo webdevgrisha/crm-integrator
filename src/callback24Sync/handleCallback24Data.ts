@@ -1,7 +1,7 @@
 import {getCallInfo} from "./getCallInfo";
 import {getHistory} from "./getHistory";
 
-// стоит ли тут добавить обработку ошибок?
+
 async function handleCallback24Data(dateFrom: string, dateTo: string) {
   const callInfoArr = await getHistory(dateFrom, dateTo);
 

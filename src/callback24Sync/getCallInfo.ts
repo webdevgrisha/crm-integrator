@@ -29,7 +29,8 @@ async function getCallInfo(callId: number) {
     const callAtTime = callInfo.call_at.split("T")[1].slice(0, 8);
 
     const parsedURL = new URL(callInfo.website);
-    const utmSource = parsedURL.searchParams.get("utm_source");
+    const utmSource = 
+      parsedURL.searchParams.get("utm_source") || callInfo.source;
     const utmCampaign = parsedURL.searchParams.get("utm_campaign");
 
     const data: Callback24CallInfo = {

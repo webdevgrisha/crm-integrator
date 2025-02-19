@@ -1,6 +1,6 @@
 import admin from "../init";
-import {ProcessedLeadInfo} from "../interfaces";
-import {ErrorData} from "./interfaces";
+import { ProcessedLeadInfo } from "../interfaces";
+import { ErrorData } from "./interfaces";
 
 const firestoreDb = admin.firestore();
 
@@ -60,4 +60,6 @@ async function filterSavedLeads(
   }
 }
 
-export {filterSavedLeads};
+export { filterSavedLeads };
+
+export type { SavedLeads }

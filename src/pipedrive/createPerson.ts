@@ -4,14 +4,28 @@ import {getSecret} from "../utils/getSecret";
 const pipedrive = require("pipedrive");
 /* eslint-enable @typescript-eslint/no-var-requires */
 
+
+interface CreatePersonFields {
+  phone: string;
+  email?: string | null;
+  personName?: string | undefined;
+  callData?: string | null;
+  callTime?: string | null;
+  callRealise?: 'Tak' | 'Nie',
+}
+
 async function createPerson(
-  phone: string,
-  email: string | null = null,
-  name: string | undefined = "Unkown",
-  callData: string | null = null,
-  callTime: string | null = null,
-  callRealise = "Nie",
+  createPersonFields: CreatePersonFields
 ) {
+  const {
+    phone,
+    email = null,
+    personName = "Unkown",
+    callData = null,
+    callTime = null,
+    callRealise = "Nie",
+  } = createPersonFields;
+  
   try {
     const apiKey = await getSecret(pipedriveConfig.apiKeyName);
 
@@ -35,7 +49,7 @@ async function createPerson(
     );
 
     const data = {
-      name: name,
+      name: personName,
       phone: phone,
       email: email,
       // visibility groups
@@ -70,3 +84,7 @@ async function createPerson(
 export {
   createPerson,
 };
+
+export type {
+  CreatePersonFields
+}

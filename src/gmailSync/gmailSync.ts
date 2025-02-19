@@ -3,10 +3,7 @@ import {
   getDateTo,
   updateDateFrom,
 } from "../utils/dateFuncs";
-import {createPerson} from "../pipedrive/createPerson";
-import {createLead} from "../pipedrive/createLeads";
 import {onSchedule} from "firebase-functions/v2/scheduler";
-import {delay} from "../utils/delay";
 
 // Gmail API
 // import {handleGmailDataGmailApi} from "./handleGmailDataGmailApi";
@@ -19,8 +16,8 @@ import {handleGmailDataImap} from "./imap/handleGmailDataImap";
 import {processSyncError, resetSyncErrorState} from "../utils/handleSyncError";
 import {ProcessedLeadInfo} from "../interfaces";
 import {saveProcessedLeadInfo} from "../utils/saveLeadInfo";
-import {filterSavedLeads} from "../utils/filterSavedLeads";
 import {gmailConfig} from "../projectConfig";
+import { processLeads } from "../pipedrive/processLeads";
 
 async function syncGmail() {
   const serviceName = gmailConfig.serviceName;
@@ -64,64 +61,7 @@ async function syncGmail() {
 
     console.log(`[${serviceName}] Fetched ${gmailDataArr.length} records`);
 
-    const savedLeads = await filterSavedLeads(serviceName, dateFromTimestamp);
-
-    for (const data of gmailDataArr) {
-      const {
-        id,
-        phone,
-        email,
-        car,
-        budget,
-        description,
-        utmSource,
-        utmCampaign,
-      } = data;
-
-      console.log(`[${serviceName}] Processing lead with ID: ${id}`);
-
-      const processedLeadInfo: ProcessedLeadInfo = {
-        serviceLeadId: id,
-        createdPersonId: null,
-        createdLeadId: null,
-        dateFrom: dateFromTimestamp,
-      };
-
-      processedLeadsInfo.push(processedLeadInfo);
-
-      let personId: number;
-
-      if (savedLeads?.[id].createdPersonId) {
-        personId = savedLeads[id].createdPersonId as number;
-
-        // eslint-disable-next-line max-len
-        console.log(`[${serviceName}] Found existing person with ID: ${personId}`);
-      } else {
-        personId = await createPerson(
-          phone,
-          email
-        );
-      }
-
-      processedLeadInfo.createdPersonId = personId;
-      await delay(200);
-
-      const leadTitle = `${phone} - ${serviceName}`;
-
-      const leadId = await createLead(
-        leadTitle,
-        personId,
-        serviceName,
-        utmSource,
-        utmCampaign,
-        budget,
-        car,
-        description
-      );
-
-      processedLeadInfo.createdLeadId = leadId;
-      await delay(200);
-    }
+    await processLeads(serviceName,  dateFromTimestamp, gmailDataArr);
 
     await updateDateFrom(dateToTimestamp, serviceName);
 
@@ -131,7 +71,7 @@ async function syncGmail() {
 
     console.log(`[${serviceName}] Sync completed successfully`);
   } catch (error) {
-    // нужны ли туту await ?
+    // нужны ли туту await  ?
     await processSyncError(serviceName);
 
     await saveProcessedLeadInfo(processedLeadsInfo, serviceName);

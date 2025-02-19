@@ -25,7 +25,7 @@ async function getFixedEmailOptions(serviceName: string, time: string) {
   return transportOptions;
 }
 
-async function sendEMail(serviceName: string, isError: boolean) {
+async function sendEmail(serviceName: string, isError: boolean) {
   try {
     const gmailInfo = JSON.parse(await getSecret("gmail-info"));
     const sendTime = new Date().toISOString();
@@ -49,6 +49,8 @@ async function sendEMail(serviceName: string, isError: boolean) {
     });
 
     console.log("Email sent successfully:", info.messageId);
+
+    return true;
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error("Failed to send email:", error.message);
@@ -57,8 +59,8 @@ async function sendEMail(serviceName: string, isError: boolean) {
       console.error("Unknown error occurred while sending email:", error);
     }
 
-    throw new Error("Failed to send email");
+    return false;
   }
 }
 
-export {sendEMail};
+export {sendEmail};

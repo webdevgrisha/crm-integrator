@@ -3,16 +3,13 @@ import {
   getDateTo,
   updateDateFrom,
 } from "../utils/dateFuncs";
-import {createPerson} from "../pipedrive/createPerson";
-import {createLead} from "../pipedrive/createLeads";
 import {onSchedule} from "firebase-functions/v2/scheduler";
-import {delay} from "../utils/delay";
 import {handleFacebookLeads} from "./handleFacebookLeads";
 import {processSyncError, resetSyncErrorState} from "../utils/handleSyncError";
 import {ProcessedLeadInfo} from "../interfaces";
-import {filterSavedLeads} from "../utils/filterSavedLeads";
 import {saveProcessedLeadInfo} from "../utils/saveLeadInfo";
 import {facebookConfig} from "../projectConfig";
+import { processLeads } from "../pipedrive/processLeads";
 
 async function syncFacebook() {
   const serviceName = facebookConfig.serviceName;
@@ -44,66 +41,7 @@ async function syncFacebook() {
 
     console.log(`[${serviceName}] Fetched ${facebookLeadsArr.length} records`);
 
-    const savedLeads = await filterSavedLeads(serviceName, dateFromTimestamp);
-
-    for (const data of facebookLeadsArr) {
-      const {
-        id,
-        name,
-        phone,
-        email,
-        carName,
-        callTime,
-        adName,
-        campaignName,
-      } = data;
-
-      console.log(`[${serviceName}] Processing lead with ID: ${id}`);
-
-      const processedLeadInfo: ProcessedLeadInfo = {
-        serviceLeadId: id,
-        createdPersonId: null,
-        createdLeadId: null,
-        dateFrom: dateFromTimestamp,
-      };
-
-      processedLeadsInfo.push(processedLeadInfo);
-
-      let personId: number;
-
-      if (savedLeads?.[id].createdPersonId) {
-        personId = savedLeads[id].createdPersonId as number;
-
-        console.log(
-          `[${serviceName}] Found existing person with ID: ${personId}`
-        );
-      } else {
-        personId = await createPerson(
-          phone,
-          email,
-          name
-        );
-      }
-
-      processedLeadInfo.createdPersonId = personId;
-      await delay(200);
-
-      const leadTitle = `${phone} - ${serviceName}`;
-
-      const leadId = await createLead(
-        leadTitle,
-        personId,
-        serviceName,
-        adName,
-        campaignName,
-        null,
-        carName,
-        `Kontakt ${callTime}`
-      );
-
-      processedLeadInfo.createdLeadId = leadId;
-      await delay(200);
-    }
+    await processLeads(serviceName,  dateFromTimestamp, facebookLeadsArr);
 
     await updateDateFrom(dateToTimestamp, serviceName);
 

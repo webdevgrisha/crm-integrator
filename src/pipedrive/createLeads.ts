@@ -1,21 +1,37 @@
-import {pipedriveConfig} from "../projectConfig";
-import {ChannelNames} from "../types";
-import {getSecret} from "../utils/getSecret";
+import { pipedriveConfig } from "../projectConfig";
+import { ChannelNames } from "../types";
+import { getSecret } from "../utils/getSecret";
 /* eslint-disable @typescript-eslint/no-var-requires */
 const pipedrive = require("pipedrive");
 /* eslint-enable @typescript-eslint/no-var-requires */
 
 
+interface CreateLeadFields {
+  title: string;
+  personId: number;
+  channelName: ChannelNames;
+  utmSource?: string | null;
+  utmCampaign?: string | null;
+  budget?: string | null;
+  carName?: string | null;
+  carDescription?: string | null;
+}
+
 async function createLead(
-  title: string,
-  personId: number,
-  channelName: ChannelNames,
-  utmSource: string | null = null,
-  utmCampaign: string | null = null,
-  budget: string | null = "0",
-  carName: string | null = null,
-  carDescription: string | null = null,
+  createLeadFields: CreateLeadFields
 ) {
+  const {
+    title,
+    personId,
+    channelName,
+    utmSource = null,
+    utmCampaign = null,
+    budget = "0",
+    carName = null,
+    carDescription = null,
+  } = createLeadFields;
+
+
   try {
     const apiKey = await getSecret(pipedriveConfig.apiKeyName);
 
@@ -80,4 +96,4 @@ async function createLead(
 }
 
 
-export {createLead};
+export { createLead };

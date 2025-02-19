@@ -2,10 +2,10 @@ interface MailFields {
   email: string;
   phone: string;
   utmSource: string;
-  utmCampaign: string | null;
-  car?: string | null;
-  budget?: string | null;
-  description?: string | null;
+  utmCampaign?: string;
+  car?: string;
+  budget?: string;
+  description?: string;
 }
 
 interface ImapMessage {
