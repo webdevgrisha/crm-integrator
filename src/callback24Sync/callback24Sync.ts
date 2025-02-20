@@ -5,11 +5,11 @@ import {
 } from "../utils/dateFuncs";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {handleCallback24Data} from "./handleCallback24Data";
-import {processSyncError, resetSyncErrorState} from "../utils/handleSyncError";
+import {handleSyncErrorState} from "../utils/handleSyncError";
 import {ProcessedLeadInfo} from "../interfaces";
 import {saveProcessedLeadInfo} from "../utils/saveLeadInfo";
 import {callback24Config} from "../projectConfig";
-import { processLeads } from "../pipedrive/processLeads";
+import {processLeads} from "../pipedrive/processLeads";
 
 
 async function syncCallback24() {
@@ -20,6 +20,8 @@ async function syncCallback24() {
 
   // более того, весь блок try, catch одинаков в каджой функции, за исключением
   // такого типа функций handleCallback24Data
+  // стоит ли вынести весь блок в одельную функцию ?
+  // вроде бы переиспользование, но с другой стороны не вредит ли это читаемости
   try {
     const {
       dateFromTimestamp,
@@ -41,17 +43,17 @@ async function syncCallback24() {
 
     // если четрые функции внизу повторяеться в каждой функции,
     //  стоит ли ее вынести в отдельную функцию
-    await processLeads(serviceName,  dateFromTimestamp, callback24DataArr);
+    await processLeads(serviceName, dateFromTimestamp, callback24DataArr);
 
     await updateDateFrom(dateToTimestamp, serviceName);
 
     await saveProcessedLeadInfo(processedLeadsInfo, serviceName);
 
-    await resetSyncErrorState(serviceName);
+    await handleSyncErrorState(serviceName, false);
 
     console.log(`[${serviceName}] Sync completed successfully`);
   } catch (error) {
-    await processSyncError(serviceName);
+    await handleSyncErrorState(serviceName, true);
 
     await saveProcessedLeadInfo(processedLeadsInfo, serviceName);
 

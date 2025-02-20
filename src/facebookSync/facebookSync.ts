@@ -5,11 +5,11 @@ import {
 } from "../utils/dateFuncs";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {handleFacebookLeads} from "./handleFacebookLeads";
-import {processSyncError, resetSyncErrorState} from "../utils/handleSyncError";
+import {handleSyncErrorState} from "../utils/handleSyncError";
 import {ProcessedLeadInfo} from "../interfaces";
 import {saveProcessedLeadInfo} from "../utils/saveLeadInfo";
 import {facebookConfig} from "../projectConfig";
-import { processLeads } from "../pipedrive/processLeads";
+import {processLeads} from "../pipedrive/processLeads";
 
 async function syncFacebook() {
   const serviceName = facebookConfig.serviceName;
@@ -41,19 +41,19 @@ async function syncFacebook() {
 
     console.log(`[${serviceName}] Fetched ${facebookLeadsArr.length} records`);
 
-    await processLeads(serviceName,  dateFromTimestamp, facebookLeadsArr);
+    await processLeads(serviceName, dateFromTimestamp, facebookLeadsArr);
 
     await updateDateFrom(dateToTimestamp, serviceName);
 
     await saveProcessedLeadInfo(processedLeadsInfo, serviceName);
 
-    await resetSyncErrorState(serviceName);
+    await handleSyncErrorState(serviceName, false);
 
     console.log(`[${serviceName}] Sync completed successfully`);
   } catch (err) {
     // какая функция более важная:
     // отправить письмо или добавить обработанные лиды ?
-    await processSyncError(serviceName);
+    await handleSyncErrorState(serviceName, true);
 
     await saveProcessedLeadInfo(processedLeadsInfo, serviceName);
 

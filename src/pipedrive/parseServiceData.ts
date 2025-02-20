@@ -1,4 +1,4 @@
-import { ServiceData } from "./interfaces";
+import {ServiceData} from "./interfaces";
 
 function parseServiceData(serviceData: ServiceData) {
   const id: string | number = serviceData.id;
@@ -9,7 +9,7 @@ function parseServiceData(serviceData: ServiceData) {
   const personName: string | undefined = serviceData.name;
   const callData: string | undefined = serviceData.callAtData;
   const callTime: string | undefined = serviceData.callAtTime;
-  const callRealise: 'Tak' | 'Nie' | undefined = 
+  const callRealise: "Tak" | "Nie" | undefined =
     serviceData.hasRealised;
 
   // lead
@@ -21,7 +21,7 @@ function parseServiceData(serviceData: ServiceData) {
   const carName: string | undefined = serviceData.carName || serviceData.car;
   const carDescription: string | undefined = serviceData.description;
 
-  
+
   const parseData = {
     id,
     phone,
@@ -42,5 +42,5 @@ function parseServiceData(serviceData: ServiceData) {
 
 
 export {
-    parseServiceData
-}
+  parseServiceData,
+};

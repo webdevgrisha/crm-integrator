@@ -1,30 +1,6 @@
 import nodemailer from "nodemailer";
 import {getSecret} from "./getSecret";
 
-function getErrorEmailOptions(serviceName: string, time: string) {
-  const transportOptions = {
-    subject: `Synchronization errors with "${serviceName}" !`,
-    text: `
-            There was an error when trying to synchronize with: ${serviceName}
-            Error time: ${time}
-            `,
-  };
-
-  return transportOptions;
-}
-
-async function getFixedEmailOptions(serviceName: string, time: string) {
-  const transportOptions = {
-    subject: `Synchronization issue with "${serviceName}" resolved!`,
-    text: `
-            The synchronization issue with: ${serviceName} has been resolved.
-            Resolution time: ${time}
-            `,
-  };
-
-  return transportOptions;
-}
-
 async function sendEmail(serviceName: string, isError: boolean) {
   try {
     const gmailInfo = JSON.parse(await getSecret("gmail-info"));
@@ -61,6 +37,30 @@ async function sendEmail(serviceName: string, isError: boolean) {
 
     return false;
   }
+}
+
+function getErrorEmailOptions(serviceName: string, time: string) {
+  const transportOptions = {
+    subject: `Synchronization errors with "${serviceName}" !`,
+    text: `
+            There was an error when trying to synchronize with: ${serviceName}
+            Error time: ${time}
+            `,
+  };
+
+  return transportOptions;
+}
+
+function getFixedEmailOptions(serviceName: string, time: string) {
+  const transportOptions = {
+    subject: `Synchronization issue with "${serviceName}" resolved!`,
+    text: `
+            The synchronization issue with: ${serviceName} has been resolved.
+            Resolution time: ${time}
+            `,
+  };
+
+  return transportOptions;
 }
 
 export {sendEmail};

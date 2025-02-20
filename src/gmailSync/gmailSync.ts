@@ -13,11 +13,11 @@ import {onSchedule} from "firebase-functions/v2/scheduler";
 // IMAP
 import {handleGmailDataImap} from "./imap/handleGmailDataImap";
 
-import {processSyncError, resetSyncErrorState} from "../utils/handleSyncError";
+import {handleSyncErrorState} from "../utils/handleSyncError";
 import {ProcessedLeadInfo} from "../interfaces";
 import {saveProcessedLeadInfo} from "../utils/saveLeadInfo";
 import {gmailConfig} from "../projectConfig";
-import { processLeads } from "../pipedrive/processLeads";
+import {processLeads} from "../pipedrive/processLeads";
 
 async function syncGmail() {
   const serviceName = gmailConfig.serviceName;
@@ -61,18 +61,18 @@ async function syncGmail() {
 
     console.log(`[${serviceName}] Fetched ${gmailDataArr.length} records`);
 
-    await processLeads(serviceName,  dateFromTimestamp, gmailDataArr);
+    await processLeads(serviceName, dateFromTimestamp, gmailDataArr);
 
     await updateDateFrom(dateToTimestamp, serviceName);
 
     await saveProcessedLeadInfo(processedLeadsInfo, serviceName);
 
-    await resetSyncErrorState(serviceName);
+    await handleSyncErrorState(serviceName, false);
 
     console.log(`[${serviceName}] Sync completed successfully`);
   } catch (error) {
     // нужны ли туту await  ?
-    await processSyncError(serviceName);
+    await handleSyncErrorState(serviceName, true);
 
     await saveProcessedLeadInfo(processedLeadsInfo, serviceName);
 

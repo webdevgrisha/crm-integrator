@@ -11,7 +11,7 @@ interface CreatePersonFields {
   personName?: string | undefined;
   callData?: string | null;
   callTime?: string | null;
-  callRealise?: 'Tak' | 'Nie',
+  callRealise?: "Tak" | "Nie",
 }
 
 async function createPerson(
@@ -25,7 +25,7 @@ async function createPerson(
     callTime = null,
     callRealise = "Nie",
   } = createPersonFields;
-  
+
   try {
     const apiKey = await getSecret(pipedriveConfig.apiKeyName);
 
@@ -86,5 +86,5 @@ export {
 };
 
 export type {
-  CreatePersonFields
-}
+  CreatePersonFields,
+};

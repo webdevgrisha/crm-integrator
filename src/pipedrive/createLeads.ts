@@ -1,6 +1,6 @@
-import { pipedriveConfig } from "../projectConfig";
-import { ChannelNames } from "../types";
-import { getSecret } from "../utils/getSecret";
+import {pipedriveConfig} from "../projectConfig";
+import {ChannelNames} from "../types";
+import {getSecret} from "../utils/getSecret";
 /* eslint-disable @typescript-eslint/no-var-requires */
 const pipedrive = require("pipedrive");
 /* eslint-enable @typescript-eslint/no-var-requires */
@@ -96,4 +96,4 @@ async function createLead(
 }
 
 
-export { createLead };
+export {createLead};

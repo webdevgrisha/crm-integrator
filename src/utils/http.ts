@@ -1,6 +1,6 @@
 import axios from "axios";
-import { getSecret } from "../utils/getSecret";
-import { utilsConfig } from "../projectConfig";
+import {getSecret} from "../utils/getSecret";
+import {utilsConfig} from "../projectConfig";
 
 interface HttpHeaders {
   [key: string]: string
