@@ -61,3 +61,5 @@ async function filterSavedLeads(
 }
 
 export {filterSavedLeads};
+
+export type {SavedLeads};

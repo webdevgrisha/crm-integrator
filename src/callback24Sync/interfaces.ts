@@ -10,7 +10,7 @@ interface Callback24ClientInfo {
 interface Callback24CallInfo {
     callAtData: string;
     callAtTime: string;
-    utmSource: string | null;
+    utmSource: string;
     utmCampaign: string | null;
 }
 

@@ -1,7 +1,8 @@
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
+import {utilsConfig} from "../projectConfig";
 
-const projectId = "crm-synchronisation";
-const versionId = "latest";
+const projectId = utilsConfig.secretManagerConfig.projectId;
+const versionId = utilsConfig.secretManagerConfig.versionId;
 
 async function getSecret(secretName: string): Promise<string> {
   const client = new SecretManagerServiceClient();

@@ -11,7 +11,7 @@ import {
   scheduleCallback24Sync,
 } from "./callback24Sync/callback24Sync";
 import {scheduleFacebookSync} from "./facebookSync/facebookSync";
-import {scheduleGmailSync} from "./gamilSync/gmailSync";
+import {scheduleGmailSync} from "./gmailSync/gmailSync";
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript

@@ -3,30 +3,31 @@ import {
   getDateTo,
   updateDateFrom,
 } from "../utils/dateFuncs";
-import {createPerson} from "../pipedrive/createPerson";
-import {createLead} from "../pipedrive/createLeads";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {handleCallback24Data} from "./handleCallback24Data";
-import {delay} from "../utils/delay";
-import {processSyncError, resetSyncErrorState} from "../utils/handleSyncError";
+import {handleSyncErrorState} from "../utils/handleSyncError";
 import {ProcessedLeadInfo} from "../interfaces";
-import {filterSavedLeads} from "../utils/filterSavedLeads";
 import {saveProcessedLeadInfo} from "../utils/saveLeadInfo";
+import {callback24Config} from "../projectConfig";
+import {processLeads} from "../pipedrive/processLeads";
 
 
 async function syncCallback24() {
-  const serviceName = "callback24";
+  const serviceName = callback24Config.serviceName;
   const processedLeadsInfo: ProcessedLeadInfo[] = [];
 
   console.log(`[${serviceName}] Sync started`);
 
+  // более того, весь блок try, catch одинаков в каджой функции, за исключением
+  // такого типа функций handleCallback24Data
+  // стоит ли вынести весь блок в одельную функцию ?
+  // вроде бы переиспользование, но с другой стороны не вредит ли это читаемости
   try {
     const {
       dateFromTimestamp,
       dateFromIsoDate,
     } = await getDateFrom(serviceName);
     const {dateToTimestamp, dateToIsoFormat} = getDateTo();
-
 
     console.log(
       // eslint-disable-next-line max-len
@@ -40,75 +41,19 @@ async function syncCallback24() {
 
     console.log(`[${serviceName}] Fetched ${callback24DataArr.length} records`);
 
-    const savedLeads = await filterSavedLeads(serviceName, dateFromTimestamp);
-
-    for (const data of callback24DataArr) {
-      const {
-        id,
-        phoneNumber,
-        hasRealised,
-        callAtData,
-        callAtTime,
-        utmSource,
-        utmCampaign,
-      } = data;
-
-      console.log(`[${serviceName}] Processing lead with ID: ${id}`);
-
-      const processedLeadInfo: ProcessedLeadInfo = {
-        serviceLeadId: id,
-        createdPersonId: null,
-        createdLeadId: null,
-        dateFrom: dateFromTimestamp,
-      };
-
-      processedLeadsInfo.push(processedLeadInfo);
-
-      let personId: number;
-
-      if (String(id) in savedLeads && savedLeads[id].createdPersonId) {
-        personId = savedLeads[id].createdPersonId as number;
-
-        console.log(
-          `[${serviceName}] Found existing person with ID: ${personId}`
-        );
-      } else {
-        personId = await createPerson(
-          phoneNumber,
-          null,
-          undefined,
-          callAtData,
-          callAtTime,
-          hasRealised
-        );
-      }
-
-      processedLeadInfo.createdPersonId = personId;
-      await delay(200);
-
-      const leadTitle = `${phoneNumber} - ${serviceName}`;
-
-      const leadId = await createLead(
-        leadTitle,
-        personId,
-        serviceName,
-        utmSource,
-        utmCampaign
-      );
-
-      processedLeadInfo.createdLeadId = leadId;
-      await delay(200);
-    }
+    // если четрые функции внизу повторяеться в каждой функции,
+    //  стоит ли ее вынести в отдельную функцию
+    await processLeads(serviceName, dateFromTimestamp, callback24DataArr);
 
     await updateDateFrom(dateToTimestamp, serviceName);
 
     await saveProcessedLeadInfo(processedLeadsInfo, serviceName);
 
-    await resetSyncErrorState(serviceName);
+    await handleSyncErrorState(serviceName, false);
 
     console.log(`[${serviceName}] Sync completed successfully`);
   } catch (error) {
-    await processSyncError(serviceName);
+    await handleSyncErrorState(serviceName, true);
 
     await saveProcessedLeadInfo(processedLeadsInfo, serviceName);
 
@@ -118,9 +63,9 @@ async function syncCallback24() {
 
 const scheduleCallback24Sync = onSchedule(
   {
-    schedule: "0 * * * *",
-    timeZone: "Europe/Warsaw",
-    region: "europe-central2",
+    schedule: callback24Config.schedule,
+    timeZone: callback24Config.timeZone,
+    region: callback24Config.region,
   },
   syncCallback24
 );

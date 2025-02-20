@@ -1,5 +1,5 @@
 import {simpleParser} from "mailparser";
-import {extractGmailFields} from "./extractGmailFields";
+import {extractGmailFields} from "../extractGmailFields";
 import {getGmailHistoryImap} from "./getGmailHistoryImap";
 import {Message} from "imap-simple";
 

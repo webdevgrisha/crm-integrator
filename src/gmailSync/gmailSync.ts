@@ -4,15 +4,23 @@ import {
   updateDateFrom,
 } from "../utils/dateFuncs";
 import {onSchedule} from "firebase-functions/v2/scheduler";
-import {handleFacebookLeads} from "./handleFacebookLeads";
+
+// Gmail API
+// import {handleGmailDataGmailApi} from "./handleGmailDataGmailApi";
+// import {authorize} from "./authorize";
+// import {google} from "googleapis";
+
+// IMAP
+import {handleGmailDataImap} from "./imap/handleGmailDataImap";
+
 import {handleSyncErrorState} from "../utils/handleSyncError";
 import {ProcessedLeadInfo} from "../interfaces";
 import {saveProcessedLeadInfo} from "../utils/saveLeadInfo";
-import {facebookConfig} from "../projectConfig";
+import {gmailConfig} from "../projectConfig";
 import {processLeads} from "../pipedrive/processLeads";
 
-async function syncFacebook() {
-  const serviceName = facebookConfig.serviceName;
+async function syncGmail() {
+  const serviceName = gmailConfig.serviceName;
   const processedLeadsInfo: ProcessedLeadInfo[] = [];
 
   console.log(`[${serviceName}] Sync started`);
@@ -34,14 +42,26 @@ async function syncFacebook() {
       `[${serviceName}] Fetching data from ${dateFromIsoDate} to ${dateToIsoFormat}`
     );
 
-    const facebookLeadsArr = await handleFacebookLeads(
+    // Gmail API
+    // const auth = await authorize();
+    // const gmail = google.gmail({version: "v1", auth});
+
+    // const gmailDataArr = await handleGmailDataGmailApi(
+    //   gmail,
+    //   dateFromEpochTime - 1,
+    //   dateToEpochTime + 1
+    // );
+
+
+    // IMAP
+    const gmailDataArr = await handleGmailDataImap(
       dateFromEpochTime - 1,
       dateToEpochTime + 1
     );
 
-    console.log(`[${serviceName}] Fetched ${facebookLeadsArr.length} records`);
+    console.log(`[${serviceName}] Fetched ${gmailDataArr.length} records`);
 
-    await processLeads(serviceName, dateFromTimestamp, facebookLeadsArr);
+    await processLeads(serviceName, dateFromTimestamp, gmailDataArr);
 
     await updateDateFrom(dateToTimestamp, serviceName);
 
@@ -50,9 +70,8 @@ async function syncFacebook() {
     await handleSyncErrorState(serviceName, false);
 
     console.log(`[${serviceName}] Sync completed successfully`);
-  } catch (err) {
-    // какая функция более важная:
-    // отправить письмо или добавить обработанные лиды ?
+  } catch (error) {
+    // нужны ли туту await  ?
     await handleSyncErrorState(serviceName, true);
 
     await saveProcessedLeadInfo(processedLeadsInfo, serviceName);
@@ -61,14 +80,13 @@ async function syncFacebook() {
   }
 }
 
-const scheduleFacebookSync = onSchedule(
+const scheduleGmailSync = onSchedule(
   {
-    schedule: facebookConfig.schedule,
-    timeZone: facebookConfig.timeZone,
-    region: facebookConfig.region,
+    schedule: gmailConfig.schedule,
+    timeZone: gmailConfig.timeZone,
+    region: gmailConfig.region,
   },
-  syncFacebook
+  syncGmail
 );
 
-
-export {scheduleFacebookSync};
+export {scheduleGmailSync};
