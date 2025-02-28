@@ -2,24 +2,17 @@ interface MailFields {
   email: string;
   phone: string;
   utmSource: string;
-  utmCampaign?: string;
-  car?: string;
+  utmCampaign?: string | null;
+  carName?: string;
   budget?: string;
   description?: string;
 }
 
-interface ImapMessage {
-  attributes: {
-    date: string;
-  };
-  parts: Array<{
-    which: string;
-    body: string;
-  }>;
-  "x-gm-msgid": string;
+interface ProcessedMail extends MailFields {
+  id: string;
 }
 
 export type {
   MailFields,
-  ImapMessage,
+  ProcessedMail,
 };

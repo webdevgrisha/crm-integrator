@@ -1,4 +1,6 @@
 import {pipedriveConfig} from "../projectConfig";
+import {PersonCustomFields} from "../projectConfig/pipedriveConfig/enums";
+import {PersonConfig} from "../projectConfig/pipedriveConfig/pipedriveConfig";
 import {getSecret} from "../utils/getSecret";
 /* eslint-disable @typescript-eslint/no-var-requires */
 const pipedrive = require("pipedrive");
@@ -14,9 +16,11 @@ interface CreatePersonFields {
   callRealise?: "Tak" | "Nie",
 }
 
+type PersonId = number;
+
 async function createPerson(
   createPersonFields: CreatePersonFields
-) {
+): Promise<PersonId> {
   const {
     phone,
     email = null,
@@ -26,10 +30,14 @@ async function createPerson(
     callRealise = "Nie",
   } = createPersonFields;
 
+  console.log(
+    "Starting to create person with the following fields:", createPersonFields
+  );
+
   try {
     const apiKey = await getSecret(pipedriveConfig.apiKeyName);
 
-    const personConfig = pipedriveConfig.personConfig;
+    const personConfig: PersonConfig = pipedriveConfig.personConfig;
 
     const defaultClient = new pipedrive.ApiClient();
     defaultClient.authentications.api_key.apiKey = apiKey;
@@ -39,13 +47,13 @@ async function createPerson(
 
     // custom fields
     const personDayField = await fieldsApi.getPersonField(
-      personConfig.customFields.personDayField
+      PersonCustomFields.Day
     );
     const personHourField = await fieldsApi.getPersonField(
-      personConfig.customFields.personHourField
+      PersonCustomFields.Hour
     );
     const callStatusField = await fieldsApi.getPersonField(
-      personConfig.customFields.callStatusField
+      PersonCustomFields.CallStatus
     );
 
     const data = {
@@ -75,7 +83,7 @@ async function createPerson(
       console.error("Create person failed with unknown error", err);
 
       throw new Error(
-        `Create a person failed with an unknown error: ${(err as any)?.message}`
+        `Create a person failed with an unknown error: ${err}`
       );
     }
   }
@@ -87,4 +95,5 @@ export {
 
 export type {
   CreatePersonFields,
+  PersonId,
 };

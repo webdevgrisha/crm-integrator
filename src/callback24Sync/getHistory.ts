@@ -1,10 +1,13 @@
-import {Callback24ClientInfo} from "./interfaces";
+import {Callback24ClientInfo, Callback24History} from "./interfaces";
 import {getSecret} from "../utils/getSecret";
-import {httpGet} from "../utils/http";
+import {httpGet} from "../utils/http/http";
 import {callback24Config} from "../projectConfig";
 
 
-async function getHistory(dateFrom: string, dateTo: string) {
+async function getHistory(
+  dateFrom: string,
+  dateTo: string
+): Promise<Callback24History[]> {
   try {
     const apiKey = await getSecret(callback24Config.apiKeyName);
 
@@ -19,14 +22,18 @@ async function getHistory(dateFrom: string, dateTo: string) {
     };
 
     const response = await httpGet(
-      callback24Config.getHistoryEndPoint,
-      headersConfig,
-      paramsConfig,
-      true
+      callback24Config.endPoint.getHistory,
+      {
+        headers: headersConfig,
+        params: paramsConfig,
+        isProxy: true,
+      }
     );
 
-    const filter: Callback24ClientInfo[] = response.data.result.filter(
-      (callbackInfo: Callback24ClientInfo) => {
+    const callHistoryArr: Callback24ClientInfo[] = response.data.result;
+
+    const filter: Callback24ClientInfo[] = callHistoryArr.filter(
+      (callbackInfo) => {
         return callbackInfo.service_name === callback24Config.filterServiceName;
       }
     );
@@ -34,11 +41,13 @@ async function getHistory(dateFrom: string, dateTo: string) {
     const reformatData = filter.map((data) => {
       const hasRealised = data.has_status_realised ? "Tak" : "Nie";
 
-      return {
+      const historyInfo: Callback24History = {
         id: data.id,
         hasRealised: hasRealised,
         phone: data.phone_number,
       };
+
+      return historyInfo;
     });
 
     return reformatData;

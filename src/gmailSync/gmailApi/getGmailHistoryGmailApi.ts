@@ -1,14 +1,19 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, camelcase */
+/* eslint-disable camelcase */
 import {gmail_v1} from "googleapis";
 import {createFilterSearchQuery} from "./createFilterSearchQuery";
 
-
-async function getGmailHistoryGmailApi(
+interface GetGmailHistoryApiObj {
   gmail: gmail_v1.Gmail,
   dateFrom: number,
   dateTo: number
-) {
-  const subjectQuery = createFilterSearchQuery(dateFrom, dateTo);
+}
+
+async function getGmailHistoryGmailApi(
+  gmailObj: GetGmailHistoryApiObj
+): Promise<gmail_v1.Schema$Message[]> {
+  const {gmail, dateFrom, dateTo} = gmailObj;
+
+  const subjectQuery: string = createFilterSearchQuery(dateFrom, dateTo);
 
   try {
     const messagesList = await gmail.users.messages.list({

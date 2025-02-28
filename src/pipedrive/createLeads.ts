@@ -1,6 +1,9 @@
 import {pipedriveConfig} from "../projectConfig";
-import {ChannelNames} from "../types";
 import {getSecret} from "../utils/getSecret";
+import {LeadCustomFields} from "../projectConfig/pipedriveConfig/enums";
+import {ServiceNames} from "../enums";
+import {LeadConfig} from "../projectConfig/pipedriveConfig/pipedriveConfig";
+
 /* eslint-disable @typescript-eslint/no-var-requires */
 const pipedrive = require("pipedrive");
 /* eslint-enable @typescript-eslint/no-var-requires */
@@ -9,7 +12,7 @@ const pipedrive = require("pipedrive");
 interface CreateLeadFields {
   title: string;
   personId: number;
-  channelName: ChannelNames;
+  serviceName: ServiceNames;
   utmSource?: string | null;
   utmCampaign?: string | null;
   budget?: string | null;
@@ -23,7 +26,7 @@ async function createLead(
   const {
     title,
     personId,
-    channelName,
+    serviceName,
     utmSource = null,
     utmCampaign = null,
     budget = "0",
@@ -33,9 +36,9 @@ async function createLead(
 
 
   try {
-    const apiKey = await getSecret(pipedriveConfig.apiKeyName);
+    const apiKey: string = await getSecret(pipedriveConfig.apiKeyName);
 
-    const leadConfig = pipedriveConfig.leadConfig;
+    const leadConfig: LeadConfig = pipedriveConfig.leadConfig;
 
     const defaultClient = new pipedrive.ApiClient();
     defaultClient.authentications.api_key.apiKey = apiKey;
@@ -45,16 +48,16 @@ async function createLead(
 
     // custom fields
     const leadCarField = await fieldsApi.getDealField(
-      leadConfig.customFields.leadCarField
+      LeadCustomFields.Car
     );
     const leadCarDescriptionField = await fieldsApi.getDealField(
-      leadConfig.customFields.leadCarDescriptionField
+      LeadCustomFields.CarDescription
     );
     const utmCampaignField = await fieldsApi.getDealField(
-      leadConfig.customFields.utmCampaignField
+      LeadCustomFields.UtmCampaign
     );
 
-    const channelId = leadConfig.channelIds[channelName];
+    const channelId: number = leadConfig.channelsId[serviceName];
 
     const data = {
       title: title,
@@ -89,7 +92,7 @@ async function createLead(
       console.error("Create a lead failed with unknown error", err);
 
       throw new Error(
-        `Create a lead failed with an unknown error: ${(err as any)?.message}`
+        `Create a lead failed with an unknown error: ${err}`
       );
     }
   }

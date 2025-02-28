@@ -6,22 +6,23 @@ import {
 import {onSchedule} from "firebase-functions/v2/scheduler";
 
 // Gmail API
-// import {handleGmailDataGmailApi} from "./handleGmailDataGmailApi";
-// import {authorize} from "./authorize";
-// import {google} from "googleapis";
+// import {gmail_v1, google} from "googleapis";
+// import { OAuth2Client } from "google-auth-library";
+// import { authorize } from "./gmailApi/authorize";
+// import { handleGmailDataGmailApi } from "./gmailApi/handleGmailDataGmailApi";
 
 // IMAP
 import {handleGmailDataImap} from "./imap/handleGmailDataImap";
 
 import {handleSyncErrorState} from "../utils/handleSyncError";
-import {ProcessedLeadInfo} from "../interfaces";
-import {saveProcessedLeadInfo} from "../utils/saveLeadInfo";
 import {gmailConfig} from "../projectConfig";
 import {processLeads} from "../pipedrive/processLeads";
+import {ProcessedMail} from "./interfaces";
+import {ServiceNames} from "../enums";
 
-async function syncGmail() {
-  const serviceName = gmailConfig.serviceName;
-  const processedLeadsInfo: ProcessedLeadInfo[] = [];
+
+async function syncGmail(): Promise<void> {
+  const serviceName: ServiceNames = gmailConfig.serviceName;
 
   console.log(`[${serviceName}] Sync started`);
 
@@ -44,9 +45,9 @@ async function syncGmail() {
 
     // Gmail API
     // const auth = await authorize();
-    // const gmail = google.gmail({version: "v1", auth});
+    // const gmail: gmail_v1.Gmail = google.gmail({version: "v1", auth});
 
-    // const gmailDataArr = await handleGmailDataGmailApi(
+    // const gmailDataArr: ProcessedMail[] = await handleGmailDataGmailApi(
     //   gmail,
     //   dateFromEpochTime - 1,
     //   dateToEpochTime + 1
@@ -54,27 +55,26 @@ async function syncGmail() {
 
 
     // IMAP
-    const gmailDataArr = await handleGmailDataImap(
+    const gmailDataArr: ProcessedMail[] = await handleGmailDataImap(
       dateFromEpochTime - 1,
       dateToEpochTime + 1
     );
 
     console.log(`[${serviceName}] Fetched ${gmailDataArr.length} records`);
 
-    await processLeads(serviceName, dateFromTimestamp, gmailDataArr);
+    await processLeads(
+      serviceName,
+      dateFromTimestamp,
+      gmailDataArr,
+    );
 
     await updateDateFrom(dateToTimestamp, serviceName);
-
-    await saveProcessedLeadInfo(processedLeadsInfo, serviceName);
 
     await handleSyncErrorState(serviceName, false);
 
     console.log(`[${serviceName}] Sync completed successfully`);
   } catch (error) {
-    // нужны ли туту await  ?
     await handleSyncErrorState(serviceName, true);
-
-    await saveProcessedLeadInfo(processedLeadsInfo, serviceName);
 
     throw new Error(`Sync ${serviceName} failed`);
   }
@@ -82,9 +82,9 @@ async function syncGmail() {
 
 const scheduleGmailSync = onSchedule(
   {
-    schedule: gmailConfig.schedule,
-    timeZone: gmailConfig.timeZone,
-    region: gmailConfig.region,
+    schedule: gmailConfig.cron.schedule,
+    timeZone: gmailConfig.cron.timeZone,
+    region: gmailConfig.cron.region,
   },
   syncGmail
 );

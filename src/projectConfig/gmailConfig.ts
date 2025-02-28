@@ -1,25 +1,29 @@
-import {ChannelNames} from "../types";
+import {ServiceNames} from "../enums";
 
 interface GmailApiConfig {
-    credentialsName: string;
-    tokenName: string;
+  credentialsName: string;
+  tokenName: string;
 }
 
 interface GmailImapConfig {
-    secretName: string;
+  secretName: string;
+  imapServer: {
     connTimeout: number,
     authTimeout: number,
     keepalive: true,
+  }
 }
 
 interface GmailConfig {
-    serviceName: ChannelNames;
-    filterMailTitles: string[];
-    imapSecretConfig: GmailImapConfig;
-    gmailApiSecretConfig: GmailApiConfig;
+  serviceName: ServiceNames;
+  filterMailTitles: string[];
+  imapConfig: GmailImapConfig;
+  gmailApiConfig: GmailApiConfig;
+  cron: {
     schedule: string;
     timeZone: string;
     region: string;
+  }
 }
 
 // Gmail API
@@ -31,25 +35,30 @@ const gmailApiConfig: GmailApiConfig = {
 // IMAP
 const gmailImapConfig: GmailImapConfig = {
   secretName: "gmail-imap",
-  connTimeout: 10000,
-  authTimeout: 10000,
-  keepalive: true,
+  imapServer: {
+    connTimeout: 10000,
+    authTimeout: 10000,
+    keepalive: true,
+  },
 };
 
 const gmailConfig: GmailConfig = {
-  serviceName: "gmail",
+  serviceName: ServiceNames.Gmail,
   filterMailTitles: [
     "Lead polecana oferta libertycar.pl",
     "Lead sprowadzenie auta libertycar.pl",
     "Kontakt libertycar.pl",
   ],
-  imapSecretConfig: gmailImapConfig,
-  gmailApiSecretConfig: gmailApiConfig,
-  schedule: "5 * * * *",
-  timeZone: "Europe/Warsaw",
-  region: "europe-central2",
+  imapConfig: gmailImapConfig,
+  gmailApiConfig: gmailApiConfig,
+  cron: {
+    schedule: "5 * * * *",
+    timeZone: "Europe/Warsaw",
+    region: "europe-central2",
+  },
 };
 
 export {
   gmailConfig,
+  GmailImapConfig,
 };

@@ -6,14 +6,13 @@ import {
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {handleFacebookLeads} from "./handleFacebookLeads";
 import {handleSyncErrorState} from "../utils/handleSyncError";
-import {ProcessedLeadInfo} from "../interfaces";
-import {saveProcessedLeadInfo} from "../utils/saveLeadInfo";
 import {facebookConfig} from "../projectConfig";
 import {processLeads} from "../pipedrive/processLeads";
+import {ServiceNames} from "../enums";
+import {FacebookProcessData} from "./interfaces";
 
-async function syncFacebook() {
-  const serviceName = facebookConfig.serviceName;
-  const processedLeadsInfo: ProcessedLeadInfo[] = [];
+async function syncFacebook(): Promise<void> {
+  const serviceName: ServiceNames = facebookConfig.serviceName;
 
   console.log(`[${serviceName}] Sync started`);
 
@@ -34,28 +33,26 @@ async function syncFacebook() {
       `[${serviceName}] Fetching data from ${dateFromIsoDate} to ${dateToIsoFormat}`
     );
 
-    const facebookLeadsArr = await handleFacebookLeads(
+    const facebookLeadsArr: FacebookProcessData[] = await handleFacebookLeads(
       dateFromEpochTime - 1,
       dateToEpochTime + 1
     );
 
     console.log(`[${serviceName}] Fetched ${facebookLeadsArr.length} records`);
 
-    await processLeads(serviceName, dateFromTimestamp, facebookLeadsArr);
+    await processLeads(
+      serviceName,
+      dateFromTimestamp,
+      facebookLeadsArr,
+    );
 
     await updateDateFrom(dateToTimestamp, serviceName);
-
-    await saveProcessedLeadInfo(processedLeadsInfo, serviceName);
 
     await handleSyncErrorState(serviceName, false);
 
     console.log(`[${serviceName}] Sync completed successfully`);
   } catch (err) {
-    // какая функция более важная:
-    // отправить письмо или добавить обработанные лиды ?
     await handleSyncErrorState(serviceName, true);
-
-    await saveProcessedLeadInfo(processedLeadsInfo, serviceName);
 
     throw new Error(`Sync ${serviceName} failed`);
   }
@@ -63,9 +60,9 @@ async function syncFacebook() {
 
 const scheduleFacebookSync = onSchedule(
   {
-    schedule: facebookConfig.schedule,
-    timeZone: facebookConfig.timeZone,
-    region: facebookConfig.region,
+    schedule: facebookConfig.cron.schedule,
+    timeZone: facebookConfig.cron.timeZone,
+    region: facebookConfig.cron.region,
   },
   syncFacebook
 );

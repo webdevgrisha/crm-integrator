@@ -1,5 +1,43 @@
-import {leadConfig, LeadConfig} from "./leadConfig";
-import {personConfig, PersonConfig} from "./personConfig";
+import {ServiceNames} from "../../enums";
+import {Currency, VisibilityGroup} from "./enums";
+
+
+// create persons API Docs
+// https://developers.pipedrive.com/docs/api/v1/Persons
+interface PersonConfig {
+  visible_to: VisibilityGroup,
+}
+
+const personConfig: PersonConfig = {
+  visible_to: VisibilityGroup.EntireCompany,
+};
+
+
+// create lead API Docs
+// https://developers.pipedrive.com/docs/api/v1/Leads
+type ChannelsId = {
+  [K in ServiceNames]: number;
+}
+
+interface LeadConfig {
+  channelsId: ChannelsId,
+  currency: Currency,
+  visibleTo: VisibilityGroup,
+}
+
+
+const channelsId: ChannelsId = {
+  callback24: 34,
+  gmail: 35,
+  facebook: 36,
+};
+
+const leadConfig: LeadConfig = {
+  channelsId: channelsId,
+  currency: Currency.PLN,
+  visibleTo: VisibilityGroup.OwnerAndFollowers,
+};
+
 
 interface PipedriveConfig {
     apiKeyName: string;
@@ -15,4 +53,6 @@ const pipedriveConfig: PipedriveConfig = {
 
 export {
   pipedriveConfig,
+  LeadConfig,
+  PersonConfig,
 };

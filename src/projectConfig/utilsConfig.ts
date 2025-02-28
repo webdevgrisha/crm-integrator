@@ -3,14 +3,14 @@ interface SecretManagerConfig {
     versionId: string;
 }
 
-interface ProxyConfig {
+interface ProxyInitConfig {
     secretName: string;
     protocol: string;
 }
 
 interface UtilsConfig {
     secretManagerConfig: SecretManagerConfig;
-    proxyConfig: ProxyConfig;
+    proxyConfig: ProxyInitConfig;
 }
 
 

@@ -1,13 +1,15 @@
 import {
+  FacebookProcessData,
   FieldDataNameTranslation,
-  LeadData,
+  FacebookLeadData,
   LeadDataNames,
-  LeadInfo,
+  FacebookLeadInfo,
 } from "./interfaces";
 
-// стоит ли добавить обработку ошибок?
-function reformatFacebookLeads(leads: any[]) {
-  // стоит ли вынести в конфиг ?
+function reformatFacebookLeads(
+  leads: FacebookLeadData[]
+): FacebookProcessData[] {
+  // ссылка в докмеетации
   const fieldDataNameTranslation: FieldDataNameTranslation = {
     [LeadDataNames.ContactHours]: "callTime",
     [LeadDataNames.PhoneNumber]: "phone",
@@ -16,30 +18,37 @@ function reformatFacebookLeads(leads: any[]) {
     [LeadDataNames.CarName]: "carName",
   };
 
-  const reformatLeads = leads.map((lead: LeadData) => {
-    const leadInfo: LeadInfo = {
-      name: "",
-      phone: "",
-      email: "",
-      callTime: "",
-      carName: "",
-    };
+  try {
+    const reformatLeads: FacebookProcessData[] = leads.map(
+      (lead: FacebookLeadData) => {
+        const leadInfo: FacebookLeadInfo = {
+          name: "",
+          phone: "",
+          email: "",
+          callTime: "",
+          carName: "",
+        };
 
-    lead.field_data.forEach((field) => {
-      const leadInfoKey =
-        fieldDataNameTranslation[field.name] as keyof LeadInfo;
-      leadInfo[leadInfoKey] = field.values[0];
-    });
+        lead.field_data.forEach((field) => {
+          const leadInfoKey =
+            fieldDataNameTranslation[field.name] as keyof FacebookLeadInfo;
+          leadInfo[leadInfoKey] = field.values[0];
+        });
 
-    return {
-      id: lead.id,
-      adName: lead.ad_name,
-      campaignName: lead.campaign_name,
-      ...leadInfo,
-    };
-  });
+        return {
+          id: lead.id,
+          adName: lead.ad_name,
+          campaignName: lead.campaign_name,
+          ...leadInfo,
+        };
+      });
 
-  return reformatLeads;
+    return reformatLeads;
+  } catch (error) {
+    console.error("Error reformatting Facebook leads:", error);
+
+    throw new Error(`Error reformatting Facebook leads: ${error}`);
+  }
 }
 
 export {reformatFacebookLeads};

@@ -1,25 +1,35 @@
 import {ServiceData} from "./interfaces";
 
 function parseServiceData(serviceData: ServiceData) {
+  console.log("Starting to parse service data:");
+
   const id: string | number = serviceData.id;
 
   // person
   const phone: string = serviceData.phone;
-  const email: string | undefined = serviceData.email;
-  const personName: string | undefined = serviceData.name;
-  const callData: string | undefined = serviceData.callAtData;
-  const callTime: string | undefined = serviceData.callAtTime;
+  const email: string | undefined =
+    "email" in serviceData ? serviceData.email : undefined;
+  const personName: string | undefined =
+    "name" in serviceData ? serviceData.name : undefined;
+  const callData: string | undefined =
+    "callAtData" in serviceData ? serviceData.callAtData : undefined;
+  const callTime: string | undefined =
+    "callAtTime" in serviceData ? serviceData.callAtTime : undefined;
   const callRealise: "Tak" | "Nie" | undefined =
-    serviceData.hasRealised;
+    "hasRealised" in serviceData ? serviceData.hasRealised : undefined;
 
   // lead
   const utmSource: string | null | undefined =
-        serviceData.utmSource || serviceData.adName;
-  const utmCampaign: string | undefined =
-        serviceData.utmCampaign || serviceData.campaignName;
-  const budget: string | undefined = serviceData.budget;
-  const carName: string | undefined = serviceData.carName || serviceData.car;
-  const carDescription: string | undefined = serviceData.description;
+    "utmSource" in serviceData ? serviceData.utmSource : serviceData.adName;
+  const utmCampaign: string | undefined | null =
+    "campaignName" in serviceData ? serviceData.campaignName :
+      serviceData.utmCampaign;
+  const budget: string | undefined =
+    "budget" in serviceData ? serviceData.budget : undefined;
+  const carName: string | undefined =
+    "carName" in serviceData ? serviceData.carName : undefined;
+  const carDescription: string | undefined =
+    "description" in serviceData ? serviceData.description : undefined;
 
 
   const parseData = {
@@ -36,6 +46,8 @@ function parseServiceData(serviceData: ServiceData) {
     carName,
     carDescription,
   };
+
+  console.log(`Data parsed successfully for data with id: ${id}`);
 
   return parseData;
 }

@@ -1,13 +1,16 @@
 import {MailFields} from "./interfaces";
 
 
-function extractGmailFields(messageBody: string, header: string) {
+function extractGmailFields(
+  messageBody: string,
+  header: string
+): MailFields {
   const fields: MailFields = {
     email: "",
     phone: "",
     utmSource: "",
     utmCampaign: undefined,
-    car: undefined,
+    carName: undefined,
     budget: undefined,
     description: undefined,
   };
@@ -24,7 +27,7 @@ function extractGmailFields(messageBody: string, header: string) {
 
   try {
     if (header === "Lead sprowadzenie auta libertycar.pl") {
-      fields.car = (messageBody.match(carRegex) || [])[1];
+      fields.carName = (messageBody.match(carRegex) || [])[1];
       fields.budget = (messageBody.match(budgetRegex) || [])[1];
     } else if (header === "Lead polecana oferta libertycar.pl") {
       fields.description = (messageBody.match(carLinkRegex) || [])[1];

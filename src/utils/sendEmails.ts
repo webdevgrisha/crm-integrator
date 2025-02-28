@@ -1,12 +1,27 @@
-import nodemailer from "nodemailer";
+import nodemailer, {SentMessageInfo} from "nodemailer";
 import {getSecret} from "./getSecret";
+import {ServiceNames} from "../enums";
 
-async function sendEmail(serviceName: string, isError: boolean) {
+interface SendEmailData {
+  subject: string;
+  text: string;
+}
+
+interface GmailInfo {
+  user: string;
+  pass: string;
+  receiver: string;
+}
+
+type IsSend = boolean;
+
+async function sendEmail(
+  data: SendEmailData
+): Promise<IsSend> {
   try {
-    const gmailInfo = JSON.parse(await getSecret("gmail-info"));
-    const sendTime = new Date().toISOString();
+    const gmailInfo: GmailInfo = JSON.parse(await getSecret("gmail-info"));
 
-    const transporter = nodemailer.createTransport({
+    const transporter: nodemailer.Transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
         user: gmailInfo.user,
@@ -14,14 +29,10 @@ async function sendEmail(serviceName: string, isError: boolean) {
       },
     });
 
-    const transportOptions = isError ?
-      getErrorEmailOptions(serviceName, sendTime) :
-      getFixedEmailOptions(serviceName, sendTime);
-
-    const info = await transporter.sendMail({
+    const info: SentMessageInfo = await transporter.sendMail({
       from: gmailInfo.user,
       to: gmailInfo.receiver,
-      ...transportOptions,
+      ...data,
     });
 
     console.log("Email sent successfully:", info.messageId);
@@ -39,8 +50,12 @@ async function sendEmail(serviceName: string, isError: boolean) {
   }
 }
 
-function getErrorEmailOptions(serviceName: string, time: string) {
-  const transportOptions = {
+async function sendErrorEmail(
+  serviceName: ServiceNames
+): Promise<IsSend> {
+  const time: string = new Date().toISOString();
+
+  const transportOptions: SendEmailData = {
     subject: `Synchronization errors with "${serviceName}" !`,
     text: `
             There was an error when trying to synchronize with: ${serviceName}
@@ -48,11 +63,17 @@ function getErrorEmailOptions(serviceName: string, time: string) {
             `,
   };
 
-  return transportOptions;
+  const sendStatus: IsSend = await sendEmail(transportOptions);
+
+  return sendStatus;
 }
 
-function getFixedEmailOptions(serviceName: string, time: string) {
-  const transportOptions = {
+async function sendFixedEmail(
+  serviceName: ServiceNames
+): Promise<IsSend> {
+  const time: string = new Date().toISOString();
+
+  const transportOptions: SendEmailData = {
     subject: `Synchronization issue with "${serviceName}" resolved!`,
     text: `
             The synchronization issue with: ${serviceName} has been resolved.
@@ -60,7 +81,9 @@ function getFixedEmailOptions(serviceName: string, time: string) {
             `,
   };
 
-  return transportOptions;
+  const sendStatus: IsSend = await sendEmail(transportOptions);
+
+  return sendStatus;
 }
 
-export {sendEmail};
+export {sendErrorEmail, sendFixedEmail};

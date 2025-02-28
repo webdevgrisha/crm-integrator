@@ -1,27 +1,33 @@
-import {simpleParser} from "mailparser";
+import {ParsedMail, simpleParser} from "mailparser";
 import {extractGmailFields} from "../extractGmailFields";
 import {getGmailHistoryImap} from "./getGmailHistoryImap";
-import {Message} from "imap-simple";
+import {Message, MessageBodyPart} from "imap-simple";
+import {MailFields, ProcessedMail} from "../interfaces";
 
 
-async function processMessageImap(message: Message) {
+async function processMessageImap(
+  message: Message
+): Promise<ProcessedMail> {
   let messageId = "unkown";
 
   try {
-    const allBodyParts = message.parts.filter((part) => part.which === "");
+    const allBodyParts: MessageBodyPart[] =
+      message.parts.filter((part) => part.which === "");
 
     if (allBodyParts.length === 0) {
       throw new Error("No message body found");
     }
 
-    const fullBody = allBodyParts.map((part) => part.body).join("\n");
+    const fullBody: string = allBodyParts.map((part) => part.body).join("\n");
 
-    const parsed = await simpleParser(fullBody);
+    const parsed: ParsedMail = await simpleParser(fullBody);
 
-    const subject = (parsed.headers.get("subject") as string) ?? "";
+    const subject: string = (parsed.headers.get("subject") as string) ?? "";
 
-    const obj = extractGmailFields(
-      parsed.text || parsed.html || "",
+    const messageBody: string = parsed.text || parsed.html || "";
+
+    const obj: MailFields = extractGmailFields(
+      messageBody,
       subject
     );
 
@@ -48,10 +54,10 @@ async function processMessageImap(message: Message) {
 async function handleGmailDataImap(
   dateFrom: number,
   dateTo: number
-) {
-  const messages = await getGmailHistoryImap(dateFrom, dateTo);
+): Promise<ProcessedMail[]> {
+  const messages: Message[] = await getGmailHistoryImap(dateFrom, dateTo);
 
-  const processData = await Promise.all(
+  const processData: ProcessedMail[] = await Promise.all(
     messages.map((message) => processMessageImap(message))
   );
 

@@ -15,15 +15,15 @@ interface LeadFiledData {
     values: string[];
 }
 
-interface LeadData {
+interface FacebookLeadData {
     id: string;
     created_time: string;
     campaign_name: string;
     ad_name: string;
-    field_data: LeadFiledData[]
+    field_data: LeadFiledData[];
 }
 
-interface LeadInfo {
+interface FacebookLeadInfo {
     name: string;
     phone: string;
     email: string;
@@ -31,12 +31,18 @@ interface LeadInfo {
     carName: string;
 }
 
-export type {
-  LeadData,
-  LeadInfo,
-  FieldDataNameTranslation,
-};
+interface FacebookProcessData extends FacebookLeadInfo {
+    id: string;
+    adName: string;
+    campaignName: string;
+}
 
+export type {
+  FacebookLeadData,
+  FacebookLeadInfo,
+  FieldDataNameTranslation,
+  FacebookProcessData,
+};
 
 export {
   LeadDataNames,

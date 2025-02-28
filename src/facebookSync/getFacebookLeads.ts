@@ -2,10 +2,14 @@ import * as bizSdk from "facebook-nodejs-business-sdk";
 import {getSecret} from "../utils/getSecret";
 import Cursor from "facebook-nodejs-business-sdk/src/cursor";
 import {facebookConfig} from "../projectConfig";
+import {FacebookLeadData} from "./interfaces";
 
 const Ad = bizSdk.Ad;
 
-async function getFacebookLeadsData(dateFrom: number, dateTo: number) {
+async function getFacebookLeadsData(
+  dateFrom: number,
+  dateTo: number
+): Promise<FacebookLeadData[]> {
   const facebookApi = JSON.parse(await getSecret(facebookConfig.apiKeyName));
 
   bizSdk.FacebookAdsApi.init(facebookApi.access_token);
@@ -32,10 +36,11 @@ async function getFacebookLeadsData(dateFrom: number, dateTo: number) {
       facebookConfig.formFields, params
     );
 
-    const allLeads = [];
+    const allLeads: FacebookLeadData[] = [];
 
     while (leads) {
-      allLeads.push(...leads);
+      const typedLeads = leads as unknown as FacebookLeadData[];
+      allLeads.push(...typedLeads);
 
       leads = leads.hasNext() ? await leads.next() : null;
     }

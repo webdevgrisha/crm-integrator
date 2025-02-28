@@ -1,3 +1,4 @@
+import {ServiceNames} from "../enums";
 import admin from "../init";
 import {ProcessedLeadInfo} from "../interfaces";
 import {ErrorData} from "./interfaces";
@@ -9,9 +10,9 @@ interface SavedLeads {
 }
 
 async function filterSavedLeads(
-  serviceName: string,
+  serviceName: ServiceNames,
   dateFrom: FirebaseFirestore.Timestamp
-) {
+): Promise<SavedLeads> {
   try {
     const savedLeads: SavedLeads = {};
 

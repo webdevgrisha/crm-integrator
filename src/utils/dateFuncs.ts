@@ -4,7 +4,13 @@ import {Timestamp} from "firebase/firestore";
 
 const firestoreDb = admin.firestore();
 
-async function getDateFrom(docId: string) {
+interface DateFromFormats {
+  dateFromTimestamp: Timestamp;
+  dateFromIsoDate: string;
+  dateFromEpochTime: number;
+}
+
+async function getDateFrom(docId: string): Promise<DateFromFormats> {
   try {
     const docRef = firestoreDb.collection("update_time").doc(docId);
 
@@ -37,7 +43,13 @@ async function getDateFrom(docId: string) {
   }
 }
 
-function getDateTo() {
+interface DateToFormats {
+  dateToTimestamp: admin.firestore.Timestamp;
+  dateToIsoFormat: string;
+  dateToEpochTime: number;
+}
+
+function getDateTo(): DateToFormats {
   try {
     const timestamp = admin.firestore.Timestamp.now();
     const isoFormat = timestamp.toDate().toISOString();
@@ -60,7 +72,7 @@ function getDateTo() {
 async function updateDateFrom(
   currentTimestamp: FirebaseFirestore.Timestamp,
   docId: string
-) {
+): Promise<void> {
   try {
     const docRef = firestoreDb.collection("update_time").doc(docId);
 
@@ -87,7 +99,9 @@ async function updateDateFrom(
   }
 }
 
-function formatTimestampToDate(timestamp: number): string {
+type DateStr = string
+
+function formatTimestampToDate(timestamp: number): DateStr {
   const date = new Date(timestamp);
   return format(date, "dd-MMM-yyyy");
 }

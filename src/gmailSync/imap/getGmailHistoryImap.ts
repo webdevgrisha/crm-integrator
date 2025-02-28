@@ -2,18 +2,34 @@ import Imap from "imap-simple";
 
 import {formatTimestampToDate} from "../../utils/dateFuncs";
 import {getSecret} from "../../utils/getSecret";
-import {createSearchCriteria} from "./createSearchCriteria";
+import {createSearchCriteria, SearchCriteria} from "./createSearchCriteria";
 import {gmailConfig} from "../../projectConfig";
+import {GmailImapConfig} from "../../projectConfig/gmailConfig";
 
+interface GmailInfo {
+  user: string;
+  password: string;
+  host: string;
+  port: number;
+}
+
+interface FetchOptions {
+  bodies: string[];
+  struct: boolean;
+}
+
+// обсдуть еще раз почему стоит выносить return из try, catch, finally
 async function getGmailHistoryImap(
   dateFromEpochTime: number,
   dateToEpochTime: number
-) {
-  let connection;
+): Promise<Imap.Message[]> {
+  let connection: Imap.ImapSimple | undefined;
   let filteredMessages: Imap.Message[];
+
   try {
-    const gmailInfo = JSON.parse(
-      await getSecret(gmailConfig.imapSecretConfig.secretName)
+    const imapConfig: GmailImapConfig = gmailConfig.imapConfig;
+    const gmailInfo: GmailInfo = JSON.parse(
+      await getSecret(imapConfig.secretName)
     );
 
     const config = {
@@ -26,27 +42,28 @@ async function getGmailHistoryImap(
         tlsOptions: {
           servername: gmailInfo.host,
         },
-        connTimeout: gmailConfig.imapSecretConfig.connTimeout,
-        authTimeout: gmailConfig.imapSecretConfig.authTimeout,
-        keepalive: gmailConfig.imapSecretConfig.keepalive,
+        connTimeout: imapConfig.imapServer.connTimeout,
+        authTimeout: imapConfig.imapServer.authTimeout,
+        keepalive: imapConfig.imapServer.keepalive,
       },
     };
 
     console.log("Connecting to IMAP...");
-    connection = await Imap.connect(config);
+    connection = await Imap.connect(config) as Imap.ImapSimple;
 
     await connection.openBox("INBOX");
 
-    const formattedDate = formatTimestampToDate(dateFromEpochTime * 1000);
+    const formattedDate: string =
+      formatTimestampToDate(dateFromEpochTime * 1000);
 
-    const searchCriteria = createSearchCriteria(formattedDate);
+    const searchCriteria: SearchCriteria = createSearchCriteria(formattedDate);
 
-    const fetchOptions = {
+    const fetchOptions: FetchOptions = {
       bodies: [""],
       struct: true,
     };
 
-    const messages = await connection.search(
+    const messages: Imap.Message[] = await connection.search(
       searchCriteria,
       fetchOptions
     );

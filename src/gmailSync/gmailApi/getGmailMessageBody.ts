@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, camelcase */
+/* eslint-disable camelcase */
 import {gmail_v1} from "googleapis";
 
 

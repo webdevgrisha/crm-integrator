@@ -1,10 +1,18 @@
 import {Callback24CallInfo} from "./interfaces";
 import {getSecret} from "../utils/getSecret";
-import {httpGet} from "../utils/http";
+import {httpGet} from "../utils/http/http";
 import {callback24Config} from "../projectConfig";
 
+interface CallInfoData {
+  id: number;
+  call_at: string;
+  website: string;
+  source: string
+}
 
-async function getCallInfo(callId: number) {
+async function getCallInfo(
+  callId: number
+): Promise<Callback24CallInfo> {
   try {
     const apiKey = await getSecret(callback24Config.apiKeyName);
 
@@ -17,16 +25,18 @@ async function getCallInfo(callId: number) {
     };
 
     const response = await httpGet(
-      callback24Config.getCallInfoEndPoint,
-      headersConfig,
-      paramsConfig,
-      true
+      callback24Config.endPoint.getCallInfo,
+      {
+        headers: headersConfig,
+        params: paramsConfig,
+        isProxy: true,
+      }
     );
 
-    const callInfo = response.data.data;
+    const callInfo: CallInfoData = response.data.data;
 
-    const callAtData = callInfo.call_at.split("T")[0];
-    const callAtTime = callInfo.call_at.split("T")[1].slice(0, 8);
+    const callAtData: string = callInfo.call_at.split("T")[0];
+    const callAtTime: string = callInfo.call_at.split("T")[1].slice(0, 8);
 
     const parsedURL = new URL(callInfo.website);
     const utmSource =

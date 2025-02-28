@@ -1,25 +1,33 @@
-import {ChannelNames} from "../types";
+import {ServiceNames} from "../enums";
 
 interface Callback24Config {
-    serviceName: ChannelNames;
-    filterServiceName: string;
-    getHistoryEndPoint: string;
-    getCallInfoEndPoint: string;
-    apiKeyName: string;
+  serviceName: ServiceNames;
+  filterServiceName: string;
+  endPoint: {
+    getHistory: string;
+    getCallInfo: string;
+  }
+  apiKeyName: string;
+  cron: {
     schedule: string;
     timeZone: string;
     region: string;
+  }
 }
 
 const callback24Config: Callback24Config = {
-  serviceName: "callback24",
+  serviceName: ServiceNames.Callback24,
   filterServiceName: "libertycar.pl",
-  getHistoryEndPoint: "https://panel.callback24.io/api/v1/phoneCalls/history",
-  getCallInfoEndPoint: "https://panel.callback24.io/api/v1/phoneCalls/getCallInfo",
+  endPoint: {
+    getHistory: "https://panel.callback24.io/api/v1/phoneCalls/history",
+    getCallInfo: "https://panel.callback24.io/api/v1/phoneCalls/getCallInfo",
+  },
   apiKeyName: "callback24-api",
-  schedule: "0 * * * *",
-  timeZone: "Europe/Warsaw",
-  region: "europe-central2",
+  cron: {
+    schedule: "0 * * * *",
+    timeZone: "Europe/Warsaw",
+    region: "europe-central2",
+  },
 };
 
 export {

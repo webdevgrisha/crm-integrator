@@ -1,4 +1,4 @@
-import {ChannelNames} from "../types";
+import {ServiceNames} from "../enums";
 
 const formFields = [
   "created_time",
@@ -8,21 +8,25 @@ const formFields = [
 ];
 
 interface FacebookConfig {
-    serviceName: ChannelNames;
-    apiKeyName: string;
-    formFields: string[];
+  serviceName: ServiceNames;
+  apiKeyName: string;
+  formFields: string[];
+  cron: {
     schedule: string;
     timeZone: string;
     region: string;
+  }
 }
 
 const facebookConfig: FacebookConfig = {
-  serviceName: "facebook",
+  serviceName: ServiceNames.Facebook,
   apiKeyName: "facebook-api",
   formFields: formFields,
-  schedule: "10 * * * *",
-  timeZone: "Europe/Warsaw",
-  region: "europe-central2",
+  cron: {
+    schedule: "10 * * * *",
+    timeZone: "Europe/Warsaw",
+    region: "europe-central2",
+  },
 };
 
 export {

@@ -1,13 +1,13 @@
 import admin from "../init";
-import {ChannelNames} from "../types";
+import {ServiceNames} from "../enums";
 import {ErrorData} from "./interfaces";
-import {sendEmail} from "./sendEmails";
+import {sendErrorEmail, sendFixedEmail} from "./sendEmails";
 
 
 const firestoreDb = admin.firestore();
 
 async function handleSyncErrorState(
-  serviceName: ChannelNames,
+  serviceName: ServiceNames,
   shouldSetError: boolean
 ): Promise<void> {
   const docRef = firestoreDb.collection("error_handle").doc(serviceName);
@@ -32,10 +32,10 @@ async function handleSyncErrorState(
 async function setError(
   docRef: admin.firestore.DocumentReference,
   data: ErrorData,
-  serviceName: ChannelNames
+  serviceName: ServiceNames
 ): Promise<void> {
   if (!data.isError || !data.isSendEmail) {
-    const sendStatus = await sendEmail(serviceName, true);
+    const sendStatus = await sendErrorEmail(serviceName);
 
     await docRef.update({
       isError: true,
@@ -48,10 +48,10 @@ async function setError(
 async function resetError(
   docRef: admin.firestore.DocumentReference,
   data: ErrorData,
-  serviceName: ChannelNames
+  serviceName: ServiceNames
 ): Promise<void> {
   if (data.isError || data.isSendEmail) {
-    const sendStatus = await sendEmail(serviceName, false);
+    const sendStatus = await sendFixedEmail(serviceName);
 
     await docRef.update({
       isError: false,

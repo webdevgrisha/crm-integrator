@@ -1,6 +1,11 @@
 import {gmailConfig} from "../../projectConfig";
 
-function createFilterSearchQuery(dateFrom: number, dateTo: number) {
+type SearchQueryStr = string;
+
+function createFilterSearchQuery(
+  dateFrom: number,
+  dateTo: number
+): SearchQueryStr {
   const subjectQuery = `
         subject: ${gmailConfig.filterMailTitles.join(" OR subject: ")}
         after:${dateFrom} before:${dateTo}`;
