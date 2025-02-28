@@ -1,48 +1,53 @@
-import axios from "axios";
-import {Callback24ClientInfo} from "./interfaces";
+import {Callback24ClientInfo, Callback24History} from "./interfaces";
 import {getSecret} from "../utils/getSecret";
+import {httpGet} from "../utils/http/http";
+import {callback24Config} from "../projectConfig";
 
-async function getHistory(dateFrom: string, dateTo: string) {
+
+async function getHistory(
+  dateFrom: string,
+  dateTo: string
+): Promise<Callback24History[]> {
   try {
-    const proxy = JSON.parse(await getSecret("proxy"));
-    const apiKey = await getSecret("callback24-api");
+    const apiKey = await getSecret(callback24Config.apiKeyName);
 
-    const response = await axios.get("https://panel.callback24.io/api/v1/phoneCalls/history", {
-      headers: {
-        "X-API-TOKEN": apiKey,
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "User-Agent": "MyApp/1.0",
-      },
-      params: {
-        date_from: dateFrom,
-        date_to: dateTo,
-      },
-      proxy: {
-        protocol: "http",
-        host: proxy.host,
-        port: proxy.port,
-        auth: {
-          username: proxy.username,
-          password: proxy.password,
-        },
-      },
-    });
+    const headersConfig = {
+      "X-API-TOKEN": apiKey,
+      "Content-Type": "application/json",
+    };
 
-    const filter: Callback24ClientInfo[] = response.data.result.filter(
-      (callbackInfo: Callback24ClientInfo) => {
-        return callbackInfo.service_name === "libertycar.pl";
+    const paramsConfig = {
+      date_from: dateFrom,
+      date_to: dateTo,
+    };
+
+    const response = await httpGet(
+      callback24Config.endPoint.getHistory,
+      {
+        headers: headersConfig,
+        params: paramsConfig,
+        isProxy: true,
+      }
+    );
+
+    const callHistoryArr: Callback24ClientInfo[] = response.data.result;
+
+    const filter: Callback24ClientInfo[] = callHistoryArr.filter(
+      (callbackInfo) => {
+        return callbackInfo.service_name === callback24Config.filterServiceName;
       }
     );
 
     const reformatData = filter.map((data) => {
       const hasRealised = data.has_status_realised ? "Tak" : "Nie";
 
-      return {
+      const historyInfo: Callback24History = {
         id: data.id,
         hasRealised: hasRealised,
-        phoneNumber: data.phone_number,
+        phone: data.phone_number,
       };
+
+      return historyInfo;
     });
 
     return reformatData;

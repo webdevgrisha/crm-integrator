@@ -1,15 +1,18 @@
 import {MailFields} from "./interfaces";
 
 
-function extractGmailFields(messageBody: string, header: string) {
+function extractGmailFields(
+  messageBody: string,
+  header: string
+): MailFields {
   const fields: MailFields = {
     email: "",
     phone: "",
     utmSource: "",
-    utmCampaign: "",
-    car: null,
-    budget: null,
-    description: null,
+    utmCampaign: undefined,
+    carName: undefined,
+    budget: undefined,
+    description: undefined,
   };
 
   const emailRegex = /E-mail:\s*([\w.-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/;
@@ -24,24 +27,24 @@ function extractGmailFields(messageBody: string, header: string) {
 
   try {
     if (header === "Lead sprowadzenie auta libertycar.pl") {
-      fields.car = (messageBody.match(carRegex) || [])[1] || null;
-      fields.budget = (messageBody.match(budgetRegex) || [])[1] || null;
+      fields.carName = (messageBody.match(carRegex) || [])[1];
+      fields.budget = (messageBody.match(budgetRegex) || [])[1];
     } else if (header === "Lead polecana oferta libertycar.pl") {
-      fields.description = (messageBody.match(carLinkRegex) || [])[1] || null;
+      fields.description = (messageBody.match(carLinkRegex) || [])[1];
     } else {
       fields.description =
-        (messageBody.match(descriptionRegex) || [])[1]?.trim() || null;
+        (messageBody.match(descriptionRegex) || [])[1]?.trim();
     }
 
-    fields.email = (messageBody.match(emailRegex) || [])[1] || "";
+    fields.email = (messageBody.match(emailRegex) || [])[1] || "unknown";
     fields.phone =
       (messageBody.match(phoneRegex) || [])[1]?.replace(/[\r\n]+/g, "")
-        .trim() || "";
+        .trim() || "unknown";
 
     fields.utmSource =
       (messageBody.match(utmSourceRegex) || [])[1]?.trim() || "DIRECT";
     fields.utmCampaign =
-      (messageBody.match(utmCampaignRegex) || [])[1]?.trim() || null;
+      (messageBody.match(utmCampaignRegex) || [])[1]?.trim();
   } catch (error) {
     console.error("Error while extracting Gmail fields:", error);
 

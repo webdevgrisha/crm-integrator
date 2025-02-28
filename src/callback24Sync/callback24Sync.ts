@@ -3,22 +3,18 @@ import {
   getDateTo,
   updateDateFrom,
 } from "../utils/dateFuncs";
-import {createPerson} from "../pipedrive/createPerson";
-import {createLead} from "../pipedrive/createLeads";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {handleCallback24Data} from "./handleCallback24Data";
-import {delay} from "../utils/delay";
-import {processSyncError, resetSyncErrorState} from "../utils/handleSyncError";
-import {ProcessedLeadInfo} from "../interfaces";
-import {filterSavedLeads} from "../utils/filterSavedLeads";
-import {saveProcessedLeadInfo} from "../utils/saveLeadInfo";
+import {handleSyncErrorState} from "../utils/handleSyncError";
+import {callback24Config} from "../projectConfig";
+import {processLeads} from "../pipedrive/processLeads";
+import logger from "../utils/logger";
+import {ServiceNames} from "../enums";
 
+async function syncCallback24(): Promise<void> {
+  const serviceName: ServiceNames = callback24Config.serviceName;
 
-async function syncCallback24() {
-  const serviceName = "callback24";
-  const processedLeadsInfo: ProcessedLeadInfo[] = [];
-
-  console.log(`[${serviceName}] Sync started`);
+  logger.info(`[${serviceName}] Sync started`);
 
   try {
     const {
@@ -27,8 +23,7 @@ async function syncCallback24() {
     } = await getDateFrom(serviceName);
     const {dateToTimestamp, dateToIsoFormat} = getDateTo();
 
-
-    console.log(
+    logger.info(
       // eslint-disable-next-line max-len
       `[${serviceName}] Fetching data from ${dateFromIsoDate} to ${dateToIsoFormat}`
     );
@@ -38,89 +33,31 @@ async function syncCallback24() {
       dateToIsoFormat
     );
 
-    console.log(`[${serviceName}] Fetched ${callback24DataArr.length} records`);
+    logger.info(`[${serviceName}] Fetched ${callback24DataArr.length} records`);
 
-    const savedLeads = await filterSavedLeads(serviceName, dateFromTimestamp);
-
-    for (const data of callback24DataArr) {
-      const {
-        id,
-        phoneNumber,
-        hasRealised,
-        callAtData,
-        callAtTime,
-        utmSource,
-        utmCampaign,
-      } = data;
-
-      console.log(`[${serviceName}] Processing lead with ID: ${id}`);
-
-      const processedLeadInfo: ProcessedLeadInfo = {
-        serviceLeadId: id,
-        createdPersonId: null,
-        createdLeadId: null,
-        dateFrom: dateFromTimestamp,
-      };
-
-      processedLeadsInfo.push(processedLeadInfo);
-
-      let personId: number;
-
-      if (String(id) in savedLeads && savedLeads[id].createdPersonId) {
-        personId = savedLeads[id].createdPersonId as number;
-
-        console.log(
-          `[${serviceName}] Found existing person with ID: ${personId}`
-        );
-      } else {
-        personId = await createPerson(
-          phoneNumber,
-          null,
-          undefined,
-          callAtData,
-          callAtTime,
-          hasRealised
-        );
-      }
-
-      processedLeadInfo.createdPersonId = personId;
-      await delay(200);
-
-      const leadTitle = `${phoneNumber} - ${serviceName}`;
-
-      const leadId = await createLead(
-        leadTitle,
-        personId,
-        serviceName,
-        utmSource,
-        utmCampaign
-      );
-
-      processedLeadInfo.createdLeadId = leadId;
-      await delay(200);
-    }
+    await processLeads(
+      serviceName,
+      dateFromTimestamp,
+      callback24DataArr,
+    );
 
     await updateDateFrom(dateToTimestamp, serviceName);
 
-    await saveProcessedLeadInfo(processedLeadsInfo, serviceName);
+    await handleSyncErrorState(serviceName, false);
 
-    await resetSyncErrorState(serviceName);
-
-    console.log(`[${serviceName}] Sync completed successfully`);
+    logger.info(`[${serviceName}] Sync completed successfully`);
   } catch (error) {
-    await processSyncError(serviceName);
+    await handleSyncErrorState(serviceName, true);
 
-    await saveProcessedLeadInfo(processedLeadsInfo, serviceName);
-
-    throw new Error(`Sync ${serviceName} failed`);
+    throw new Error(`Sync ${serviceName} failed: ${error}`);
   }
 }
 
 const scheduleCallback24Sync = onSchedule(
   {
-    schedule: "0 * * * *",
-    timeZone: "Europe/Warsaw",
-    region: "europe-central2",
+    schedule: callback24Config.cron.schedule,
+    timeZone: callback24Config.cron.timeZone,
+    region: callback24Config.cron.region,
   },
   syncCallback24
 );

@@ -8,7 +8,8 @@ This document provides additional information and nuances to consider during the
 2. [Gmail API](#gmail-api)
    - [Refresh Token Expiry](#refresh-token-expiry)
 3. [Pipedrive Lead or User Creation Issue](#pipedrive-lead-or-user-creation-issue)
-4. [Generating an Application Token](#generating-an-application-token)
+4. [Callback24 Data Retrieval Issue](#callback24-data-retrieval-issue)
+5. [Generating Facebook an Application Token](#generating-facebook-an-application-token)
 
 ### Gmail API
 
@@ -33,7 +34,13 @@ If you attempt to create multiple leads or users simultaneously, you may encount
 This project already includes a solution to this problem. The `delay` function in the `utils` folder is used to add a delay between API calls, ensuring that you do not exceed the rate limit.
 
 
-### Generating an Application Token
+### Callback24 Data Retrieval Issue
+
+Direct requests to Callback24 from Firebase servers may be blocked. To resolve this issue, a proxy server is used to route the requests.
+
+This project already includes a solution to this problem. The `proxy` configuration in the `utils` folder is used to route requests through a proxy server, ensuring that data can be retrieved from Callback24 without being blocked.
+
+### Generating Facebook an Application Token
 
 To access data from the Contact Center in Meta Business Suite using the Graph API, it is necessary to generate an appropriate access token. This token authorizes requests to the API and provides access to the required resources.
 

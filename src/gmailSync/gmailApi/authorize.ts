@@ -1,11 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, camelcase, max-len */
-import {google} from "googleapis";
-import {getSecret} from "../utils/getSecret";
+import {google, Auth} from "googleapis";
+import {getSecret} from "../../utils/getSecret";
+import {gmailConfig} from "../../projectConfig";
 
-async function authorize(): Promise<any> {
+async function authorize(): Promise<Auth.OAuth2Client> {
   try {
-    const credentials = JSON.parse(await getSecret("credentials"));
-    const token = JSON.parse(await getSecret("token"));
+    const credentials = JSON.parse(
+      await getSecret(gmailConfig.gmailApiConfig.credentialsName)
+    );
+    const token = JSON.parse(
+      await getSecret(gmailConfig.gmailApiConfig.tokenName)
+    );
 
     const {client_id, client_secret, redirect_uris} = credentials.installed;
 

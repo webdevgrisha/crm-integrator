@@ -3,19 +3,16 @@ import {
   getDateTo,
   updateDateFrom,
 } from "../utils/dateFuncs";
-import {createPerson} from "../pipedrive/createPerson";
-import {createLead} from "../pipedrive/createLeads";
 import {onSchedule} from "firebase-functions/v2/scheduler";
-import {delay} from "../utils/delay";
 import {handleFacebookLeads} from "./handleFacebookLeads";
-import {processSyncError, resetSyncErrorState} from "../utils/handleSyncError";
-import {ProcessedLeadInfo} from "../interfaces";
-import {filterSavedLeads} from "../utils/filterSavedLeads";
-import {saveProcessedLeadInfo} from "../utils/saveLeadInfo";
+import {handleSyncErrorState} from "../utils/handleSyncError";
+import {facebookConfig} from "../projectConfig";
+import {processLeads} from "../pipedrive/processLeads";
+import {ServiceNames} from "../enums";
+import {FacebookProcessData} from "./interfaces";
 
-async function syncFacebook() {
-  const serviceName = "facebook";
-  const processedLeadsInfo: ProcessedLeadInfo[] = [];
+async function syncFacebook(): Promise<void> {
+  const serviceName: ServiceNames = facebookConfig.serviceName;
 
   console.log(`[${serviceName}] Sync started`);
 
@@ -36,87 +33,26 @@ async function syncFacebook() {
       `[${serviceName}] Fetching data from ${dateFromIsoDate} to ${dateToIsoFormat}`
     );
 
-    const facebookLeadsArr = await handleFacebookLeads(
+    const facebookLeadsArr: FacebookProcessData[] = await handleFacebookLeads(
       dateFromEpochTime - 1,
       dateToEpochTime + 1
     );
 
     console.log(`[${serviceName}] Fetched ${facebookLeadsArr.length} records`);
 
-    const savedLeads = await filterSavedLeads(serviceName, dateFromTimestamp);
-
-    for (const data of facebookLeadsArr) {
-      const {
-        id,
-        name,
-        phone,
-        email,
-        carName,
-        callTime,
-        adName,
-        campaignName,
-      } = data;
-
-      console.log(`[${serviceName}] Processing lead with ID: ${id}`);
-
-      const processedLeadInfo: ProcessedLeadInfo = {
-        serviceLeadId: id,
-        createdPersonId: null,
-        createdLeadId: null,
-        dateFrom: dateFromTimestamp,
-      };
-
-      processedLeadsInfo.push(processedLeadInfo);
-
-      let personId: number;
-
-      if (String(id) in savedLeads && savedLeads[id].createdPersonId) {
-        personId = savedLeads[id].createdPersonId as number;
-
-        console.log(
-          `[${serviceName}] Found existing person with ID: ${personId}`
-        );
-      } else {
-        personId = await createPerson(
-          phone,
-          email,
-          name
-        );
-      }
-
-      processedLeadInfo.createdPersonId = personId;
-      await delay(200);
-
-      const leadTitle = `${phone} - ${serviceName}`;
-
-      const leadId = await createLead(
-        leadTitle,
-        personId,
-        serviceName,
-        adName,
-        campaignName,
-        null,
-        carName,
-        `Kontakt ${callTime}`
-      );
-
-      processedLeadInfo.createdLeadId = leadId;
-      await delay(200);
-    }
+    await processLeads(
+      serviceName,
+      dateFromTimestamp,
+      facebookLeadsArr,
+    );
 
     await updateDateFrom(dateToTimestamp, serviceName);
 
-    await saveProcessedLeadInfo(processedLeadsInfo, serviceName);
-
-    await resetSyncErrorState(serviceName);
+    await handleSyncErrorState(serviceName, false);
 
     console.log(`[${serviceName}] Sync completed successfully`);
   } catch (err) {
-    // какая функция более важная:
-    // отправить письмо или добавить обработанные лиды ?
-    await processSyncError(serviceName);
-
-    await saveProcessedLeadInfo(processedLeadsInfo, serviceName);
+    await handleSyncErrorState(serviceName, true);
 
     throw new Error(`Sync ${serviceName} failed`);
   }
@@ -124,9 +60,9 @@ async function syncFacebook() {
 
 const scheduleFacebookSync = onSchedule(
   {
-    schedule: "10 * * * *",
-    timeZone: "Europe/Warsaw",
-    region: "europe-central2",
+    schedule: facebookConfig.cron.schedule,
+    timeZone: facebookConfig.cron.timeZone,
+    region: facebookConfig.cron.region,
   },
   syncFacebook
 );

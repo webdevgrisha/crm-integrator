@@ -1,6 +1,6 @@
 # CRM Integrator
 
-CRM Integrator is a project designed for automatically synchronizing leads from three sources: **Facebook**, **Callback24**, and **Gmail**, directly into **Pipedrive CRM**. This ensures that all incoming data is processed and recorded in the CRM, providing a centralized solution for managing leads and improving workflow efficiency. The synchronization occurs every hour.
+CRM Integrator is a project designed for automatically synchronizing leads from three sources: **Facebook**, **Callback24**, and **Gmail**, directly into **Pipedrive CRM**. This ensures that all incoming leads is processed and recorded in the CRM, providing a centralized solution for managing leads and improving workflow efficiency. The synchronization occurs every hour. The synchronization time can be changed at any moment.
 
 ## Table of Contents
 1. [Features](#features)
@@ -8,9 +8,12 @@ CRM Integrator is a project designed for automatically synchronizing leads from 
 3. [Requirements](#requirements)
 4. [Installation](#installation)
 5. [Usage](#usage)
-6. [Usage](#advanced)
-7. [Contributing](#contributing)
-8. [License](#license)
+6. [Configuration](#configuration)
+7. [Secrets Management](#secrets-management)
+8. [Database](#database)
+8. [Advanced](#advanced)
+9. [Contributing](#contributing)
+10. [License](#license)
 
 ## Features
 - **Gmail Integration**: Retrieves and processes email leads from Gmail, then automatically creates records in Pipedrive via the API.
@@ -29,7 +32,6 @@ CRM Integrator is a project designed for automatically synchronizing leads from 
 - **Google Secret Manager**
 
 ## Requirements
-
 This project requires several tools and configurations to run properly. Please ensure you have the following:
 
 - [Node.js](https://nodejs.org/) at least version 14 (see [functions/package.json](functions/package.json))  
@@ -37,7 +39,8 @@ This project requires several tools and configurations to run properly. Please e
 - A valid Firebase project configured (see [functions/.firebaserc](functions/.firebaserc))  
 - [Google Secret Manager](https://cloud.google.com/secret-manager) for storing API keys (refer to [`getSecret`](functions/src/utils/getSecret.ts))  
 - **Firestore** for storing errors and data related to integrations  
-- **Callback24 API key** for integrating Callback24 leads  
+- **Callback24 API key** for integrating Callback24 leads
+- **Proxy** for accessing Callback24 API  
 - **Google App Password or Gmail API credentials** for accessing Gmail data  
 - **A Facebook Business App** for Facebook lead integration  
 - **Pipedrive API key** for CRM integration (stored in Google Secret Manager)  
@@ -52,6 +55,18 @@ For a Installation guide, please refer to the [Installation Guide](docs/installa
 ## Usage
 
 For detailed instructions on how to start or use the project, please refer to the [Usage Guide](docs/usage.md).
+
+## Configuration
+
+To customize the project configuration, please refer to the [Configuration Guide](). This guide provides detailed instructions on how to configure various aspects of the project, including Callback24, Facebook, Gmail, and Pipedrive integrations.
+
+## Secrets Management
+
+For detailed information on the structure and usage of secrets stored in Google Secret Manager, please refer to the [Secrets Management Guide](docs/config.md).
+
+## Database
+
+This project uses Firestore as its database to store errors and data related to integrations. For a detailed description of the database structure, please refer to the [Database Structure Guide](docs/database-structure.md).
 
 ## Advanced
 

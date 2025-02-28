@@ -1,8 +1,12 @@
 import {getCallInfo} from "./getCallInfo";
 import {getHistory} from "./getHistory";
+import {Callback24ProcessData} from "./interfaces";
 
-// стоит ли тут добавить обработку ошибок?
-async function handleCallback24Data(dateFrom: string, dateTo: string) {
+
+async function handleCallback24Data(
+  dateFrom: string,
+  dateTo: string
+): Promise<Callback24ProcessData[]> {
   const callInfoArr = await getHistory(dateFrom, dateTo);
 
   if (!callInfoArr) {
@@ -13,10 +17,13 @@ async function handleCallback24Data(dateFrom: string, dateTo: string) {
     callInfoArr.map((callInfo) => getCallInfo(callInfo.id))
   );
 
-  const unitData = callInfoArr.map((callInfo, index) => ({
-    ...callInfo,
-    ...additionCallInfo[index],
-  }));
+  const unitData: Callback24ProcessData[] = callInfoArr.map(
+    (callInfo, index) => (
+      {
+        ...callInfo,
+        ...additionCallInfo[index],
+      }
+    ));
 
   return unitData;
 }

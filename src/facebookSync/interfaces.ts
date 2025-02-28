@@ -1,23 +1,20 @@
-type LeadDataNames = "w_jakich_godzinach_można_się_kontaktować_?_"
-    | "numer_telefonu"
-    | "imię"
-    | "email"
-    | "jakiego_samochodu_szukasz_?";
+import {LeadDataNames} from "../projectConfig/facebookConfig";
+
 
 interface LeadFiledData {
     name: LeadDataNames;
     values: string[];
 }
 
-interface LeadData {
+interface FacebookLeadData {
     id: string;
     created_time: string;
     campaign_name: string;
     ad_name: string;
-    field_data: LeadFiledData[]
+    field_data: LeadFiledData[];
 }
 
-interface LeadInfo {
+interface FacebookLeadInfo {
     name: string;
     phone: string;
     email: string;
@@ -25,12 +22,14 @@ interface LeadInfo {
     carName: string;
 }
 
-interface FieldDataNameTranslation {
-    [key: string]: keyof LeadInfo;
+interface FacebookProcessData extends FacebookLeadInfo {
+    id: string;
+    adName: string;
+    campaignName: string;
 }
 
 export type {
-  LeadData,
-  LeadInfo,
-  FieldDataNameTranslation,
+  FacebookLeadData,
+  FacebookLeadInfo,
+  FacebookProcessData,
 };

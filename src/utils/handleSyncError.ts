@@ -1,98 +1,64 @@
 import admin from "../init";
+import {ServiceNames} from "../enums";
 import {ErrorData} from "./interfaces";
-import {sendErrorEmail, sendFixedEmail} from "./sendMails";
+import {sendErrorEmail, sendFixedEmail} from "./sendEmails";
 
 
 const firestoreDb = admin.firestore();
 
-async function processSyncError(serviceName: string): Promise<void> {
-  try {
-    const docRef = firestoreDb.collection("error_handle").doc(serviceName);
+async function handleSyncErrorState(
+  serviceName: ServiceNames,
+  shouldSetError: boolean
+): Promise<void> {
+  const docRef = firestoreDb.collection("error_handle").doc(serviceName);
+  const doc = await docRef.get();
 
-    // не уверен, что тут нужна тарназакция
-    await firestoreDb.runTransaction(async (transaction) => {
-      const doc = await docRef.get();
+  if (!doc.exists) {
+    throw new Error(`Document for service "${serviceName}" does not exist.`);
+  }
 
-      if (!doc.exists) {
-        throw Error(`Document for service "${serviceName}" does not exist.`);
-      }
+  const data = doc.data() as ErrorData | undefined;
+  if (!data) {
+    throw new Error(`Data for service "${serviceName}" does not exist.`);
+  }
 
-      const data = doc.data() as ErrorData | undefined;
-
-      if (!data) {
-        throw Error(`Data for service "${serviceName}" does not exist.`);
-      }
-
-      // логи выглядят странно (с отправкой ошибки на почту)
-      if (!data.isError || !data.isSendEmail) {
-        const currentTimestamp = admin.firestore.Timestamp.now();
-        let isEmailSend = false;
-
-        try {
-          sendErrorEmail(serviceName);
-          isEmailSend = true;
-        } catch (emailError) {
-          console.error(
-            `Error sending email for service "${serviceName}":`, emailError
-          );
-        }
-
-        transaction.update(docRef, {
-          isError: true,
-          isSendEmail: isEmailSend,
-          errorTime: currentTimestamp,
-        });
-      }
-    });
-
-    console.log(
-      `Handled sync error for service "${serviceName}" successfully.`
-    );
-  } catch (error) {
-    console.error(
-      `Error handling sync error for service "${serviceName}":`, error
-    );
-
-    throw new Error(`Failed to handle sync error for service "${serviceName}"`);
+  if (shouldSetError) {
+    setError(docRef, data, serviceName);
+  } else {
+    resetError(docRef, data, serviceName);
   }
 }
 
-async function resetSyncErrorState(serviceName: string): Promise<void> {
-  try {
-    const docRef = firestoreDb.collection("error_handle").doc(serviceName);
+async function setError(
+  docRef: admin.firestore.DocumentReference,
+  data: ErrorData,
+  serviceName: ServiceNames
+): Promise<void> {
+  if (!data.isError || !data.isSendEmail) {
+    const sendStatus = await sendErrorEmail(serviceName);
 
-    const doc = await docRef.get();
+    await docRef.update({
+      isError: true,
+      isSendEmail: sendStatus,
+      errorTime: admin.firestore.Timestamp.now(),
+    });
+  }
+}
 
-    if (!doc.exists) {
-      throw Error(`Document for service "${serviceName}" does not exist.`);
-    }
-
-    const data = doc.data() as ErrorData | undefined;
-
-    if (!data) {
-      // стоит ли добавить логирование в таких случаях ?
-      throw Error(`Data for service "${serviceName}" does not exist.`);
-    }
-
-    if (!data.isError) return;
+async function resetError(
+  docRef: admin.firestore.DocumentReference,
+  data: ErrorData,
+  serviceName: ServiceNames
+): Promise<void> {
+  if (data.isError || data.isSendEmail) {
+    const sendStatus = await sendFixedEmail(serviceName);
 
     await docRef.update({
       isError: false,
-      isSendEmail: false,
+      isSendEmail: !sendStatus,
       errorTime: null,
     });
-
-    // a елси произойдет ошибка при отправки письма ?
-    await sendFixedEmail(serviceName);
-
-    console.log(`Reset sync error for service "${serviceName}" successfully.`);
-  } catch (error) {
-    console.error(
-      `Error resetting sync error for service "${serviceName}":`, error
-    );
-
-    throw new Error(`Failed to reset sync error for service "${serviceName}"`);
   }
 }
 
-export {processSyncError, resetSyncErrorState};
+export {handleSyncErrorState};

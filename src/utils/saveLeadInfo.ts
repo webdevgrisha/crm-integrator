@@ -1,3 +1,4 @@
+import {firestore} from "firebase-admin";
 import admin from "../init";
 import {ProcessedLeadInfo} from "../interfaces";
 
@@ -6,17 +7,19 @@ const firestoreDb = admin.firestore();
 async function saveProcessedLeadInfo(
   processedLeadsInfo: ProcessedLeadInfo[],
   serviceName: string
-) {
+): Promise<void> {
   try {
-    const collectionRef = firestoreDb
+    const collectionRef: firestore.CollectionReference = firestoreDb
       .collection("lead_services")
       .doc(serviceName)
       .collection("leads");
 
-    const batch = firestoreDb.batch();
+    const batch: firestore.WriteBatch = firestoreDb.batch();
 
     processedLeadsInfo.forEach((leadInfo) => {
-      const newDocRef = collectionRef.doc(String(leadInfo.serviceLeadId));
+      const newDocRef: firestore.DocumentReference =
+        collectionRef.doc(String(leadInfo.serviceLeadId));
+
       batch.set(newDocRef, leadInfo);
     });
 

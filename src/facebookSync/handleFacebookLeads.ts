@@ -1,11 +1,16 @@
 import {getFacebookLeadsData} from "./getFacebookLeads";
+import {FacebookProcessData, FacebookLeadData} from "./interfaces";
 import {reformatFacebookLeads} from "./reformatFacebookLeads";
 
-async function handleFacebookLeads(dateFrom: number, dateTo: number) {
+async function handleFacebookLeads(
+  dateFrom: number,
+  dateTo: number
+) {
   try {
-    const leads = await getFacebookLeadsData(dateFrom, dateTo);
+    const leads: FacebookLeadData[] =
+      await getFacebookLeadsData(dateFrom, dateTo);
 
-    const reformatLeads = reformatFacebookLeads(leads);
+    const reformatLeads: FacebookProcessData[] = reformatFacebookLeads(leads);
 
     return reformatLeads;
   } catch (error) {
