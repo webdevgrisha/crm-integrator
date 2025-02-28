@@ -10,6 +10,7 @@ CRM Integrator is a project designed for automatically synchronizing leads from 
 5. [Usage](#usage)
 6. [Configuration](#configuration)
 7. [Secrets Management](#secrets-management)
+8. [Database](#database)
 8. [Advanced](#advanced)
 9. [Contributing](#contributing)
 10. [License](#license)
@@ -62,6 +63,10 @@ To customize the project configuration, please refer to the [Configuration Guide
 ## Secrets Management
 
 For detailed information on the structure and usage of secrets stored in Google Secret Manager, please refer to the [Secrets Management Guide](docs/config.md).
+
+## Database
+
+This project uses Firestore as its database to store errors and data related to integrations. For a detailed description of the database structure, please refer to the [Database Structure Guide](docs/database-structure.md).
 
 ## Advanced
 

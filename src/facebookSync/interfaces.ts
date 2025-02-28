@@ -1,14 +1,5 @@
-type FieldDataNameTranslation = {
-    [key in LeadDataNames]: string;
-}
+import {LeadDataNames} from "../projectConfig/facebookConfig";
 
-enum LeadDataNames {
-    ContactHours = "w_jakich_godzinach_można_się_kontaktować_?_",
-    PhoneNumber = "numer_telefonu",
-    PersonName = "imię",
-    Email = "email",
-    CarName = "jakiego_samochodu_szukasz_?",
-}
 
 interface LeadFiledData {
     name: LeadDataNames;
@@ -40,10 +31,5 @@ interface FacebookProcessData extends FacebookLeadInfo {
 export type {
   FacebookLeadData,
   FacebookLeadInfo,
-  FieldDataNameTranslation,
   FacebookProcessData,
-};
-
-export {
-  LeadDataNames,
 };

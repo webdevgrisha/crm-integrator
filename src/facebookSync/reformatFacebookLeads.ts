@@ -1,8 +1,7 @@
+import {facebookConfig} from "../projectConfig";
 import {
   FacebookProcessData,
-  FieldDataNameTranslation,
   FacebookLeadData,
-  LeadDataNames,
   FacebookLeadInfo,
 } from "./interfaces";
 
@@ -10,13 +9,6 @@ function reformatFacebookLeads(
   leads: FacebookLeadData[]
 ): FacebookProcessData[] {
   // ссылка в докмеетации
-  const fieldDataNameTranslation: FieldDataNameTranslation = {
-    [LeadDataNames.ContactHours]: "callTime",
-    [LeadDataNames.PhoneNumber]: "phone",
-    [LeadDataNames.PersonName]: "name",
-    [LeadDataNames.Email]: "email",
-    [LeadDataNames.CarName]: "carName",
-  };
 
   try {
     const reformatLeads: FacebookProcessData[] = leads.map(
@@ -31,7 +23,9 @@ function reformatFacebookLeads(
 
         lead.field_data.forEach((field) => {
           const leadInfoKey =
-            fieldDataNameTranslation[field.name] as keyof FacebookLeadInfo;
+            facebookConfig.fieldDataNameTranslation[
+              field.name
+            ] as keyof FacebookLeadInfo;
           leadInfo[leadInfoKey] = field.values[0];
         });
 

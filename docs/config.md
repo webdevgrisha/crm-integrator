@@ -41,6 +41,7 @@ The `projectConfig` folder contains configuration files for various services use
   - `serviceName`: The name of the service.
   - `apiKeyName`: The name of the secret storing the API key.
   - `formFields`: The fields to retrieve from Facebook leads.
+  - `fieldDataNameTranslation`: An object used to convert original form field names to user-defined names.
   - `schedule`: The schedule for running the synchronization.
   - `timeZone`: The time zone for the schedule.
   - `region`: The region for the Firebase function.
