@@ -58,7 +58,7 @@ For detailed instructions on how to start or use the project, please refer to th
 
 ## Configuration
 
-To customize the project configuration, please refer to the [Configuration Guide](). This guide provides detailed instructions on how to configure various aspects of the project, including Callback24, Facebook, Gmail, and Pipedrive integrations.
+To customize the project configuration, please refer to the [Configuration Guide](docs/config.md). This guide provides detailed instructions on how to configure various aspects of the project, including Callback24, Facebook, Gmail, and Pipedrive integrations.
 
 ## Secrets Management
 
