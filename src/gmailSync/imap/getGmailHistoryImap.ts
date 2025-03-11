@@ -1,6 +1,6 @@
 import Imap from "imap-simple";
 
-import {formatTimestampToDate} from "../../utils/dateFuncs";
+import {formatTimestampToDate} from "../../utils/dateFuncs/index";
 import {getSecret} from "../../utils/getSecret";
 import {createSearchCriteria, SearchCriteria} from "./createSearchCriteria";
 import {gmailConfig} from "../../projectConfig";

@@ -17,15 +17,33 @@ interface LeadObj {
   carDescription?: string | null;
 }
 
-async function processLeads(
+interface ProcessLeads {
   serviceName: ServiceNames,
   dateFromTimestamp: Timestamp,
   serviceDataArr: ServiceData[],
-): Promise<void> {
+  checkError?: boolean,
+}
+
+
+async function processLeads(data: ProcessLeads): Promise<void> {
+  const {
+    serviceName,
+    dateFromTimestamp,
+    serviceDataArr,
+    checkError = true,
+  } = data;
   const processedLeadsInfoArr: ProcessedLeadInfo[] = [];
 
   try {
-    const savedLeads = await filterSavedLeads(serviceName, dateFromTimestamp);
+    const savedLeads = await filterSavedLeads(
+      {
+        serviceName,
+        checkError,
+        dateFrom: dateFromTimestamp,
+      }
+    );
+
+    console.log(`[${serviceName}] filterSavedLeads: ${savedLeads}`);
 
     for (const data of serviceDataArr) {
       const {id, ...parsedData} = parseServiceData(data);
@@ -69,9 +87,11 @@ async function processLeads(
       await delay(200);
 
       const leadId = await processCreateLead(
+        id,
         parsedData.phone,
         serviceName,
         personId,
+        savedLeads,
         leadObj
       );
 
@@ -98,7 +118,7 @@ async function processCreatePerson(
   console.log(`[${serviceName}] Processing person creation for ID: ${id}`);
 
   if (savedLeads[id]?.createdPersonId) {
-    personId = savedLeads?.[id].createdPersonId as number;
+    personId = savedLeads[id].createdPersonId as number;
 
     console.log(
       `[${serviceName}] Found existing person with ID: ${personId}`
@@ -111,21 +131,32 @@ async function processCreatePerson(
 }
 
 async function processCreateLead(
+  id: string | number,
   phone: string,
   serviceName: ServiceNames,
   personId: number,
+  savedLeads: SavedLeads,
   leadObj: LeadObj
 ) {
+  let leadId: string;
   const leadTitle = `${phone} - ${serviceName}`;
 
-  const leadId = await createLead(
-    {
-      title: leadTitle,
-      serviceName,
-      personId,
-      ...leadObj,
-    }
-  );
+  if (savedLeads[id]?.createdLeadId) {
+    leadId = savedLeads[id].createdLeadId as string;
+
+    console.log(
+      `[${serviceName}] Found existing lead with ID: ${leadId}`
+    );
+  } else {
+    leadId = await createLead(
+      {
+        title: leadTitle,
+        serviceName,
+        personId,
+        ...leadObj,
+      }
+    );
+  }
 
   return leadId;
 }

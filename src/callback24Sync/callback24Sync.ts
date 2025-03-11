@@ -2,7 +2,7 @@ import {
   getDateFrom,
   getDateTo,
   updateDateFrom,
-} from "../utils/dateFuncs";
+} from "../utils/dateFuncs/index";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {handleCallback24Data} from "./handleCallback24Data";
 import {handleSyncErrorState} from "../utils/handleSyncError";
@@ -36,9 +36,11 @@ async function syncCallback24(): Promise<void> {
     logger.info(`[${serviceName}] Fetched ${callback24DataArr.length} records`);
 
     await processLeads(
-      serviceName,
-      dateFromTimestamp,
-      callback24DataArr,
+      {
+        serviceName,
+        dateFromTimestamp,
+        serviceDataArr: callback24DataArr,
+      }
     );
 
     await updateDateFrom(dateToTimestamp, serviceName);

@@ -36,7 +36,7 @@ const gmailApiConfig: GmailApiConfig = {
 const gmailImapConfig: GmailImapConfig = {
   secretName: "gmail-imap",
   imapServer: {
-    connTimeout: 10000,
+    connTimeout: 15000,
     authTimeout: 10000,
     keepalive: true,
   },
