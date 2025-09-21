@@ -15,8 +15,8 @@ function parseServiceData(serviceData: ServiceData) {
     "callAtData" in serviceData ? serviceData.callAtData : undefined;
   const callTime: string | undefined =
     "callAtTime" in serviceData ? serviceData.callAtTime : undefined;
-  const callRealise: "Tak" | "Nie" | undefined =
-    "hasRealised" in serviceData ? serviceData.hasRealised : undefined;
+  const callRealize: "Tak" | "Nie" | undefined =
+    "hasRealized" in serviceData ? serviceData.hasRealized : undefined;
 
   // lead
   const utmSource: string | null | undefined =
@@ -39,7 +39,7 @@ function parseServiceData(serviceData: ServiceData) {
     personName,
     callData,
     callTime,
-    callRealise,
+    callRealize,
     utmSource,
     utmCampaign,
     budget,

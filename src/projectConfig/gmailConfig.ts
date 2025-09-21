@@ -37,7 +37,7 @@ const gmailImapConfig: GmailImapConfig = {
   secretName: "gmail-imap",
   imapServer: {
     connTimeout: 15000,
-    authTimeout: 10000,
+    authTimeout: 15000,
     keepalive: true,
   },
 };

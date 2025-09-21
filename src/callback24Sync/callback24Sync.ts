@@ -18,7 +18,7 @@ async function syncCallback24(): Promise<void> {
 
   try {
     const {
-      dateFromTimestamp,
+      dateFromTimestamp: dateFromSaveTimestamp,
       dateFromIsoDate,
     } = await getDateFrom(serviceName);
     const {dateToTimestamp, dateToIsoFormat} = getDateTo();
@@ -38,7 +38,7 @@ async function syncCallback24(): Promise<void> {
     await processLeads(
       {
         serviceName,
-        dateFromTimestamp,
+        dateFromSaveTimestamp,
         serviceDataArr: callback24DataArr,
       }
     );

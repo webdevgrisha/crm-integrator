@@ -1,4 +1,4 @@
-import {Timestamp} from "firebase/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 import {filterSavedLeads, SavedLeads} from "../utils/filterSavedLeads";
 import {ProcessedLeadInfo} from "../interfaces";
 import {createPerson, CreatePersonFields} from "./createPerson";
@@ -19,7 +19,8 @@ interface LeadObj {
 
 interface ProcessLeads {
   serviceName: ServiceNames,
-  dateFromTimestamp: Timestamp,
+  dateFromSaveTimestamp: Timestamp,
+  dateFromCheckTimestamp?: Timestamp,
   serviceDataArr: ServiceData[],
   checkError?: boolean,
 }
@@ -28,7 +29,8 @@ interface ProcessLeads {
 async function processLeads(data: ProcessLeads): Promise<void> {
   const {
     serviceName,
-    dateFromTimestamp,
+    dateFromSaveTimestamp,
+    dateFromCheckTimestamp = dateFromSaveTimestamp,
     serviceDataArr,
     checkError = true,
   } = data;
@@ -39,7 +41,7 @@ async function processLeads(data: ProcessLeads): Promise<void> {
       {
         serviceName,
         checkError,
-        dateFrom: dateFromTimestamp,
+        dateFrom: dateFromCheckTimestamp,
       }
     );
 
@@ -54,7 +56,7 @@ async function processLeads(data: ProcessLeads): Promise<void> {
         personName: parsedData.personName,
         callData: parsedData.callData,
         callTime: parsedData.callTime,
-        callRealise: parsedData.callRealise,
+        callRealize: parsedData.callRealize,
       };
 
       const leadObj: LeadObj = {
@@ -71,7 +73,7 @@ async function processLeads(data: ProcessLeads): Promise<void> {
         serviceLeadId: id,
         createdPersonId: null,
         createdLeadId: null,
-        dateFrom: dateFromTimestamp,
+        dateFrom: dateFromSaveTimestamp,
       };
 
       processedLeadsInfoArr.push(processedLeadInfo);
@@ -84,7 +86,7 @@ async function processLeads(data: ProcessLeads): Promise<void> {
       );
 
       processedLeadInfo.createdPersonId = personId;
-      await delay(200);
+      await delay(500);
 
       const leadId = await processCreateLead(
         id,
@@ -96,7 +98,7 @@ async function processLeads(data: ProcessLeads): Promise<void> {
       );
 
       processedLeadInfo.createdLeadId = leadId;
-      await delay(200);
+      await delay(500);
     }
 
     await saveProcessedLeadInfo(processedLeadsInfoArr, serviceName);

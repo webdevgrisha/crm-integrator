@@ -18,7 +18,7 @@ async function syncFacebook(): Promise<void> {
 
   try {
     const {
-      dateFromTimestamp,
+      dateFromTimestamp: dateFromSaveTimestamp,
       dateFromIsoDate,
       dateFromEpochTime,
     } = await getDateFrom(serviceName);
@@ -43,7 +43,7 @@ async function syncFacebook(): Promise<void> {
     await processLeads(
       {
         serviceName,
-        dateFromTimestamp,
+        dateFromSaveTimestamp,
         serviceDataArr: facebookLeadsArr,
       }
     );

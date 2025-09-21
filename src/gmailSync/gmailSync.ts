@@ -28,9 +28,10 @@ async function syncGmail(): Promise<void> {
 
   try {
     const {
-      dateFromTimestamp,
-      dateFromIsoDate,
-      dateFromEpochTime,
+      dateFromSaveTimestamp,
+      dateFromCheckTimestamp,
+      dateFromIsoCheckDate,
+      dateFromEpochCheckTime,
     } = await getDateFromGmail(serviceName);
     const {
       dateToTimestamp,
@@ -40,7 +41,7 @@ async function syncGmail(): Promise<void> {
 
     console.log(
       // eslint-disable-next-line max-len
-      `[${serviceName}] Fetching data from ${dateFromIsoDate} to ${dateToIsoFormat}`
+      `[${serviceName}] Fetching data from ${dateFromIsoCheckDate} to ${dateToIsoFormat}`
     );
 
     // Gmail API
@@ -56,7 +57,7 @@ async function syncGmail(): Promise<void> {
 
     // IMAP
     const gmailDataArr: ProcessedMail[] = await handleGmailDataImap(
-      dateFromEpochTime - 1,
+      dateFromEpochCheckTime,
       dateToEpochTime + 1
     );
 
@@ -65,7 +66,8 @@ async function syncGmail(): Promise<void> {
     await processLeads(
       {
         serviceName,
-        dateFromTimestamp,
+        dateFromSaveTimestamp,
+        dateFromCheckTimestamp,
         serviceDataArr: gmailDataArr,
         checkError: false,
       }

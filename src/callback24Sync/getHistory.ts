@@ -39,11 +39,11 @@ async function getHistory(
     );
 
     const reformatData = filter.map((data) => {
-      const hasRealised = data.has_status_realised ? "Tak" : "Nie";
+      const hasRealized = data.has_status_realized ? "Tak" : "Nie";
 
       const historyInfo: Callback24History = {
         id: data.id,
-        hasRealised: hasRealised,
+        hasRealized: hasRealized,
         phone: data.phone_number,
       };
 
