@@ -2,7 +2,7 @@ import {
   getDateFrom,
   getDateTo,
   updateDateFrom,
-} from "../utils/dateFuncs";
+} from "../utils/dateFuncs/index";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {handleFacebookLeads} from "./handleFacebookLeads";
 import {handleSyncErrorState} from "../utils/handleSyncError";
@@ -18,7 +18,7 @@ async function syncFacebook(): Promise<void> {
 
   try {
     const {
-      dateFromTimestamp,
+      dateFromTimestamp: dateFromSaveTimestamp,
       dateFromIsoDate,
       dateFromEpochTime,
     } = await getDateFrom(serviceName);
@@ -41,9 +41,11 @@ async function syncFacebook(): Promise<void> {
     console.log(`[${serviceName}] Fetched ${facebookLeadsArr.length} records`);
 
     await processLeads(
-      serviceName,
-      dateFromTimestamp,
-      facebookLeadsArr,
+      {
+        serviceName,
+        dateFromSaveTimestamp,
+        serviceDataArr: facebookLeadsArr,
+      }
     );
 
     await updateDateFrom(dateToTimestamp, serviceName);

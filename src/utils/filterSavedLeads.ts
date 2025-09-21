@@ -1,30 +1,46 @@
 import {ServiceNames} from "../enums";
-import admin from "../init";
+import {firestoreDb} from "../init";
 import {ProcessedLeadInfo} from "../interfaces";
 import {ErrorData} from "./interfaces";
 
-const firestoreDb = admin.firestore();
 
 interface SavedLeads {
   [key: string | number]: ProcessedLeadInfo;
 }
 
+interface FilterSavedLeads {
+  serviceName: ServiceNames;
+  dateFrom: FirebaseFirestore.Timestamp;
+  checkError: boolean;
+}
+
 async function filterSavedLeads(
-  serviceName: ServiceNames,
-  dateFrom: FirebaseFirestore.Timestamp
+  data: FilterSavedLeads
 ): Promise<SavedLeads> {
+  const {serviceName, dateFrom, checkError} = data;
+
+  const savedLeads: SavedLeads = {};
+
   try {
-    const savedLeads: SavedLeads = {};
+    console.log(`Starting to filter saved leads for service: ${serviceName}`);
 
-    const errorHandleDocRef = firestoreDb
-      .collection("error_handle")
-      .doc(serviceName);
-    const errorHandleDoc = await errorHandleDocRef.get();
-    const errorHandleData = errorHandleDoc.data() as ErrorData | undefined;
 
-    if (!errorHandleData?.isError) {
-      return savedLeads;
+    if (checkError) {
+      const errorHandleDocRef = firestoreDb
+        .collection("error_handle")
+        .doc(serviceName);
+      const errorHandleDoc = await errorHandleDocRef.get();
+      const errorHandleData = errorHandleDoc.data() as ErrorData | undefined;
+
+      if (!errorHandleData?.isError) {
+        console.log(
+          // eslint-disable-next-line max-len
+          `No error found for service: ${serviceName}. Skipping filtering saved leads.`
+        );
+        return savedLeads;
+      }
     }
+
 
     const collectionRef = firestoreDb
       .collection("lead_services")
@@ -32,18 +48,25 @@ async function filterSavedLeads(
       .collection("leads");
 
     const querySnapshot = await collectionRef
-      .where("dateFrom", "==", dateFrom)
+      .where("dateFrom", ">=", dateFrom)
       .get();
 
     if (querySnapshot.empty) {
+      // eslint-disable-next-line max-len
+      console.log(`No leads found for service: ${serviceName} starting from date: ${dateFrom.toDate()}`);
       return savedLeads;
     }
+
+    console.log(
+      // eslint-disable-next-line max-len
+      `Found ${querySnapshot.size} leads for service: ${serviceName} starting from date: ${dateFrom.toDate()}`
+    );
 
     querySnapshot.forEach((doc) => {
       const docData = doc.data() as ProcessedLeadInfo;
       const docId = doc.id;
 
-      if (docData.createdLeadId) return;
+      // if (docData.createdLeadId) return;
 
       savedLeads[docId] = docData;
     });

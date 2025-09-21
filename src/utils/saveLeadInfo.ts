@@ -1,8 +1,6 @@
 import {firestore} from "firebase-admin";
-import admin from "../init";
 import {ProcessedLeadInfo} from "../interfaces";
-
-const firestoreDb = admin.firestore();
+import {firestoreDb} from "../init";
 
 async function saveProcessedLeadInfo(
   processedLeadsInfo: ProcessedLeadInfo[],

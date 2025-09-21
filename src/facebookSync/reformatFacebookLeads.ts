@@ -29,6 +29,17 @@ function reformatFacebookLeads(
           leadInfo[leadInfoKey] = field.values[0];
         });
 
+        const SUFFIX = "...";
+        const MAX_LENGTH = 255;
+
+        if (leadInfo.carName.length > MAX_LENGTH) {
+          leadInfo.description =
+            `Pełny opis z pola Samochód:\n${leadInfo.carName}`;
+
+          leadInfo.carName =
+            leadInfo.carName.slice(0, MAX_LENGTH - SUFFIX.length) + SUFFIX;
+        }
+
         return {
           id: lead.id,
           adName: lead.ad_name,

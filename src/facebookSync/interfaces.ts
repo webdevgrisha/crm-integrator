@@ -20,6 +20,7 @@ interface FacebookLeadInfo {
     email: string;
     callTime: string;
     carName: string;
+    description?: string;
 }
 
 interface FacebookProcessData extends FacebookLeadInfo {

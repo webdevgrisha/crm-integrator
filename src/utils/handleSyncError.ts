@@ -1,10 +1,8 @@
-import admin from "../init";
 import {ServiceNames} from "../enums";
+import {admin, firestoreDb} from "../init";
 import {ErrorData} from "./interfaces";
 import {sendErrorEmail, sendFixedEmail} from "./sendEmails";
 
-
-const firestoreDb = admin.firestore();
 
 async function handleSyncErrorState(
   serviceName: ServiceNames,

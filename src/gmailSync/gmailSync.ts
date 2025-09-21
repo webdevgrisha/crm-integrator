@@ -1,8 +1,8 @@
 import {
-  getDateFrom,
+  getDateFromGmail,
   getDateTo,
   updateDateFrom,
-} from "../utils/dateFuncs";
+} from "../utils/dateFuncs/index";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 
 // Gmail API
@@ -28,10 +28,11 @@ async function syncGmail(): Promise<void> {
 
   try {
     const {
-      dateFromTimestamp,
-      dateFromIsoDate,
-      dateFromEpochTime,
-    } = await getDateFrom(serviceName);
+      dateFromSaveTimestamp,
+      dateFromCheckTimestamp,
+      dateFromIsoCheckDate,
+      dateFromEpochCheckTime,
+    } = await getDateFromGmail(serviceName);
     const {
       dateToTimestamp,
       dateToIsoFormat,
@@ -40,7 +41,7 @@ async function syncGmail(): Promise<void> {
 
     console.log(
       // eslint-disable-next-line max-len
-      `[${serviceName}] Fetching data from ${dateFromIsoDate} to ${dateToIsoFormat}`
+      `[${serviceName}] Fetching data from ${dateFromIsoCheckDate} to ${dateToIsoFormat}`
     );
 
     // Gmail API
@@ -56,16 +57,20 @@ async function syncGmail(): Promise<void> {
 
     // IMAP
     const gmailDataArr: ProcessedMail[] = await handleGmailDataImap(
-      dateFromEpochTime - 1,
+      dateFromEpochCheckTime,
       dateToEpochTime + 1
     );
 
     console.log(`[${serviceName}] Fetched ${gmailDataArr.length} records`);
 
     await processLeads(
-      serviceName,
-      dateFromTimestamp,
-      gmailDataArr,
+      {
+        serviceName,
+        dateFromSaveTimestamp,
+        dateFromCheckTimestamp,
+        serviceDataArr: gmailDataArr,
+        checkError: false,
+      }
     );
 
     await updateDateFrom(dateToTimestamp, serviceName);

@@ -3,12 +3,12 @@ interface Callback24ClientInfo {
   phone_number: string;
   addition_time: string;
   service_name: string;
-  has_status_realised: boolean;
+  has_status_realized: boolean;
 }
 
 interface Callback24History {
   id: number;
-  hasRealised: "Tak" | "Nie";
+  hasRealized: "Tak" | "Nie";
   phone: string;
 }
 
