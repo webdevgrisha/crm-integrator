@@ -7,8 +7,12 @@ import logger from "../utils/logger";
 interface CallInfoData {
   id: number;
   call_at: string;
-  website: string;
+  website: string | null;
   source: string
+}
+
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 
 async function getCallInfo(
@@ -44,7 +48,7 @@ async function getCallInfo(
     let utmTerm: string | null = null;
 
     try {
-      const parsedURL = new URL(callInfo.website);
+      const parsedURL = new URL(callInfo.website as string);
 
       utmSource = parsedURL.searchParams.get("utm_source") || callInfo.source;
       utmCampaign = parsedURL.searchParams.get("utm_campaign");
@@ -53,7 +57,7 @@ async function getCallInfo(
       logger.warn("Invalid callback24 website", {
         callId,
         website: callInfo.website,
-        error: urlError instanceof Error ? urlError.message : String(urlError),
+        error: getErrorMessage(urlError),
       });
     }
 

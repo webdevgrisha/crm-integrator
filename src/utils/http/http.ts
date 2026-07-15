@@ -1,5 +1,6 @@
-import axios, {AxiosResponse} from "axios";
-import {initializedProxy} from "./proxy";
+import axios, { AxiosResponse } from "axios";
+import { initializedProxy } from "./proxy";
+import logger from "../logger";
 
 interface HttpHeaders {
   [key: string]: string
@@ -38,8 +39,26 @@ async function httpGet(
 
     return response;
   } catch (error) {
-    console.error(`Error making GET request to ${path}:`, error);
-    throw new Error(`Failed to make GET request to ${path}`);
+    const requestError = error as {
+      message?: string;
+      code?: string;
+      response?: {
+        status?: number;
+        data?: unknown;
+      };
+    };
+
+    logger.error("Error making GET request", {
+      path,
+      message: requestError.message ?? String(error),
+      code: requestError.code,
+      status: requestError.response?.status,
+      responseData: requestError.response?.data,
+    });
+
+    throw new Error(
+      `Failed to make GET request to ${path}: ${requestError.message ?? String(error)}`
+    );
   }
 }
 
