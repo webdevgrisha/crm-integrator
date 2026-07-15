@@ -1,9 +1,9 @@
 /* eslint-disable camelcase */
-import {gmail_v1} from "googleapis";
-import {getGmailMessageBody} from "./getGmailMessageBody";
-import {extractGmailFields} from "../extractGmailFields";
-import {getGmailHistoryGmailApi} from "./getGmailHistoryGmailApi";
-import {MailFields, ProcessedMail} from "../interfaces";
+import { gmail_v1 } from "googleapis";
+import { getGmailMessageBody } from "./getGmailMessageBody";
+import { extractGmailFields } from "../extractGmailFields";
+import { getGmailHistoryGmailApi } from "./getGmailHistoryGmailApi";
+import { MailFields, ProcessedMail } from "../interfaces";
 
 
 async function processMessageGmailApi(
@@ -12,7 +12,7 @@ async function processMessageGmailApi(
 ): Promise<ProcessedMail> {
   try {
     const messageDetails = await gmail.users.messages
-      .get({userId: "me", id: messageId});
+      .get({ userId: "me", id: messageId });
 
     const payload: gmail_v1.Schema$MessagePart | undefined =
       messageDetails.data.payload;
@@ -29,7 +29,7 @@ async function processMessageGmailApi(
     const messageBody: string = getGmailMessageBody(payload);
     const extractedFields: MailFields = extractGmailFields(messageBody, header);
 
-    return {id: messageId, ...extractedFields};
+    return { id: messageId, ...extractedFields };
   } catch (error) {
     console.error("Error processing message:", error);
 
@@ -43,15 +43,21 @@ async function handleGmailDataGmailApi(
   dateTo: number
 ): Promise<ProcessedMail[]> {
   const messages: gmail_v1.Schema$Message[] =
-    await getGmailHistoryGmailApi({gmail, dateFrom, dateTo});
+    await getGmailHistoryGmailApi({ gmail, dateFrom, dateTo });
 
   const processData: ProcessedMail[] = await Promise.all(
-    messages.map((message) => processMessageGmailApi(gmail, message.id!))
+    messages.map((message) => {
+      if (!message.id) {
+        throw new Error("Message ID is missing");
+      }
+
+      return processMessageGmailApi(gmail, message.id);
+    })
   );
 
   return processData;
 }
 
 
-export {handleGmailDataGmailApi};
+export { handleGmailDataGmailApi };
 

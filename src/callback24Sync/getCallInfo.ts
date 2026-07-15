@@ -1,7 +1,7 @@
-import { Callback24CallInfo } from "./interfaces";
-import { getSecret } from "../utils/getSecret";
-import { httpGet } from "../utils/http/http";
-import { callback24Config } from "../projectConfig";
+import {Callback24CallInfo} from "./interfaces";
+import {getSecret} from "../utils/getSecret";
+import {httpGet} from "../utils/http/http";
+import {callback24Config} from "../projectConfig";
 import logger from "../utils/logger";
 
 interface CallInfoData {
@@ -77,4 +77,4 @@ async function getCallInfo(
   }
 }
 
-export { getCallInfo };
+export {getCallInfo};
