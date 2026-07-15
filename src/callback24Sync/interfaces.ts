@@ -17,6 +17,7 @@ interface Callback24CallInfo {
   callAtTime: string;
   utmSource: string;
   utmCampaign?: string | null;
+  utmTerm?: string | null;
 }
 
 interface Callback24ProcessData extends Callback24History, Callback24CallInfo {}

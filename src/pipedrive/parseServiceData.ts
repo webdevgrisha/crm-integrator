@@ -24,6 +24,8 @@ function parseServiceData(serviceData: ServiceData) {
   const utmCampaign: string | undefined | null =
     "campaignName" in serviceData ? serviceData.campaignName :
       serviceData.utmCampaign;
+  const utmTerm =
+    "utmTerm" in serviceData ? serviceData.utmTerm : undefined;
   const budget: string | undefined =
     "budget" in serviceData ? serviceData.budget : undefined;
   const carName: string | undefined =
@@ -42,6 +44,7 @@ function parseServiceData(serviceData: ServiceData) {
     callRealize,
     utmSource,
     utmCampaign,
+    utmTerm,
     budget,
     carName,
     carDescription,

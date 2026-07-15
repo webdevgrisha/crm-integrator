@@ -1,7 +1,8 @@
-import {Callback24CallInfo} from "./interfaces";
-import {getSecret} from "../utils/getSecret";
-import {httpGet} from "../utils/http/http";
-import {callback24Config} from "../projectConfig";
+import { Callback24CallInfo } from "./interfaces";
+import { getSecret } from "../utils/getSecret";
+import { httpGet } from "../utils/http/http";
+import { callback24Config } from "../projectConfig";
+import logger from "../utils/logger";
 
 interface CallInfoData {
   id: number;
@@ -38,16 +39,30 @@ async function getCallInfo(
     const callAtData: string = callInfo.call_at.split("T")[0];
     const callAtTime: string = callInfo.call_at.split("T")[1].slice(0, 8);
 
-    const parsedURL = new URL(callInfo.website);
-    const utmSource =
-      parsedURL.searchParams.get("utm_source") || callInfo.source;
-    const utmCampaign = parsedURL.searchParams.get("utm_campaign");
+    let utmSource = callInfo.source;
+    let utmCampaign: string | null = null;
+    let utmTerm: string | null = null;
+
+    try {
+      const parsedURL = new URL(callInfo.website);
+
+      utmSource = parsedURL.searchParams.get("utm_source") || callInfo.source;
+      utmCampaign = parsedURL.searchParams.get("utm_campaign");
+      utmTerm = parsedURL.searchParams.get("utm_term");
+    } catch (urlError) {
+      logger.warn("Invalid callback24 website", {
+        callId,
+        website: callInfo.website,
+        error: urlError instanceof Error ? urlError.message : String(urlError),
+      });
+    }
 
     const data: Callback24CallInfo = {
       callAtData,
       callAtTime,
       utmSource,
       utmCampaign,
+      utmTerm,
     };
 
     return data;
@@ -58,4 +73,4 @@ async function getCallInfo(
   }
 }
 
-export {getCallInfo};
+export { getCallInfo };

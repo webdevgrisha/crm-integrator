@@ -10,6 +10,7 @@ function extractGmailFields(
     phone: "",
     utmSource: "",
     utmCampaign: undefined,
+    utmTerm: undefined,
     carName: undefined,
     budget: undefined,
     description: undefined,
@@ -24,6 +25,7 @@ function extractGmailFields(
   const descriptionRegex = /Treść wiadomości:\s*([\s\S]*?)\nUTM Source:/;
   const utmSourceRegex = /UTM Source:\s*([^\r\n]+)(?=\s*UTM Medium:|$)/;
   const utmCampaignRegex = /UTM Campaign:\s*([^\r\n]+)(?=\s*UTM Term:|$)/;
+  const utmTermRegex = /UTM Term:\s*([^\r\n]*)/;
 
   try {
     if (header === "Lead sprowadzenie auta libertycar.pl") {
@@ -55,6 +57,8 @@ function extractGmailFields(
       (messageBody.match(utmSourceRegex) || [])[1]?.trim() || "DIRECT";
     fields.utmCampaign =
       (messageBody.match(utmCampaignRegex) || [])[1]?.trim();
+    fields.utmTerm =
+      (messageBody.match(utmTermRegex) || [])[1]?.trim();
   } catch (error) {
     console.error("Error while extracting Gmail fields:", error);
 

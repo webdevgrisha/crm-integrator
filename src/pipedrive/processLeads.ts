@@ -12,6 +12,7 @@ import {saveProcessedLeadInfo} from "../utils/saveLeadInfo";
 interface LeadObj {
   utmSource?: string | null;
   utmCampaign?: string | null;
+  utmTerm?: string | null;
   budget?: string | null;
   carName?: string | null;
   carDescription?: string | null;
@@ -62,6 +63,7 @@ async function processLeads(data: ProcessLeads): Promise<void> {
       const leadObj: LeadObj = {
         utmSource: parsedData.utmSource,
         utmCampaign: parsedData.utmCampaign,
+        utmTerm: parsedData.utmTerm,
         budget: parsedData.budget,
         carName: parsedData.carName,
         carDescription: parsedData.carDescription,

@@ -1,8 +1,8 @@
 import {pipedriveConfig} from "../projectConfig";
 import {getSecret} from "../utils/getSecret";
-import {LeadCustomFields} from "../projectConfig/pipedriveConfig/enums";
 import {ServiceNames} from "../enums";
 import {LeadConfig} from "../projectConfig/pipedriveConfig/pipedriveConfig";
+import {LeadFieldKeys} from "../projectConfig/pipedriveConfig/enums";
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 const pipedrive = require("pipedrive");
@@ -15,6 +15,7 @@ interface CreateLeadFields {
   serviceName: ServiceNames;
   utmSource?: string | null;
   utmCampaign?: string | null;
+  utmTerm?: string | null;
   budget?: string | null;
   carName?: string | null;
   carDescription?: string | null;
@@ -29,6 +30,7 @@ async function createLead(
     serviceName,
     utmSource = null,
     utmCampaign = null,
+    utmTerm = null,
     budget = "0",
     carName = null,
     carDescription = null,
@@ -43,19 +45,7 @@ async function createLead(
     const defaultClient = new pipedrive.ApiClient();
     defaultClient.authentications.api_key.apiKey = apiKey;
 
-    const fieldsApi = new pipedrive.DealFieldsApi(defaultClient);
     const api = new pipedrive.LeadsApi(defaultClient);
-
-    // custom fields
-    const leadCarField = await fieldsApi.getDealField(
-      LeadCustomFields.Car
-    );
-    const leadCarDescriptionField = await fieldsApi.getDealField(
-      LeadCustomFields.CarDescription
-    );
-    const utmCampaignField = await fieldsApi.getDealField(
-      LeadCustomFields.UtmCampaign
-    );
 
     const channelId: number = leadConfig.channelsId[serviceName];
 
@@ -71,9 +61,10 @@ async function createLead(
       // visibility groups
       visible_to: leadConfig.visibleTo,
       // custom fields
-      [leadCarField.data.key]: carName,
-      [leadCarDescriptionField.data.key]: carDescription,
-      [utmCampaignField.data.key]: utmCampaign,
+      [LeadFieldKeys.Car]: carName,
+      [LeadFieldKeys.CarDescription]: carDescription,
+      [LeadFieldKeys.UtmCampaign]: utmCampaign,
+      [LeadFieldKeys.UtmTerm]: utmTerm,
       // was_seen: true
     };
 

@@ -3,6 +3,7 @@ interface MailFields {
   phone: string;
   utmSource: string;
   utmCampaign?: string | null;
+  utmTerm?: string | null;
   carName?: string;
   budget?: string;
   description?: string;

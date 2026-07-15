@@ -1,5 +1,5 @@
 import {pipedriveConfig} from "../projectConfig";
-import {PersonCustomFields} from "../projectConfig/pipedriveConfig/enums";
+import {PersonFieldKeys} from "../projectConfig/pipedriveConfig/enums";
 import {PersonConfig} from "../projectConfig/pipedriveConfig/pipedriveConfig";
 import {getSecret} from "../utils/getSecret";
 /* eslint-disable @typescript-eslint/no-var-requires */
@@ -42,19 +42,7 @@ async function createPerson(
     const defaultClient = new pipedrive.ApiClient();
     defaultClient.authentications.api_key.apiKey = apiKey;
 
-    const fieldsApi = new pipedrive.PersonFieldsApi(defaultClient);
     const personApi = new pipedrive.PersonsApi(defaultClient);
-
-    // custom fields
-    const personDayField = await fieldsApi.getPersonField(
-      PersonCustomFields.Day
-    );
-    const personHourField = await fieldsApi.getPersonField(
-      PersonCustomFields.Hour
-    );
-    const callStatusField = await fieldsApi.getPersonField(
-      PersonCustomFields.CallStatus
-    );
 
     const data = {
       name: personName,
@@ -63,9 +51,9 @@ async function createPerson(
       // visibility groups
       visible_to: personConfig.visible_to,
       // custom fields
-      [personDayField.data.key]: callData,
-      [personHourField.data.key]: callTime,
-      [callStatusField.data.key]: callRealise,
+      [PersonFieldKeys.Day]: callData,
+      [PersonFieldKeys.Hour]: callTime,
+      [PersonFieldKeys.CallStatus]: callRealise,
     };
 
     const response = await personApi.addPerson(data);
