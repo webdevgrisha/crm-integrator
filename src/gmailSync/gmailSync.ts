@@ -29,7 +29,6 @@ async function syncGmail(): Promise<void> {
   try {
     const {
       dateFromSaveTimestamp,
-      dateFromCheckTimestamp,
       dateFromIsoCheckDate,
       dateFromEpochCheckTime,
     } = await getDateFromGmail(serviceName);
@@ -67,9 +66,7 @@ async function syncGmail(): Promise<void> {
       {
         serviceName,
         dateFromSaveTimestamp,
-        dateFromCheckTimestamp,
         serviceDataArr: gmailDataArr,
-        checkError: false,
       }
     );
 

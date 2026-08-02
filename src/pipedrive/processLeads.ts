@@ -1,29 +1,18 @@
 import {Timestamp} from "firebase-admin/firestore";
-import {filterSavedLeads, SavedLeads} from "../utils/filterSavedLeads";
+import {filterSavedLeads} from "../utils/filterSavedLeads";
 import {ProcessedLeadInfo} from "../interfaces";
-import {createPerson, CreatePersonFields} from "./createPerson";
-import {createLead} from "./createLeads";
-import {ServiceData} from "./interfaces";
+import {LeadObj, ServiceData} from "./interfaces";
 import {parseServiceData} from "./parseServiceData";
 import {delay} from "../utils/delay";
 import {ServiceNames} from "../enums";
 import {saveProcessedLeadInfo} from "../utils/saveLeadInfo";
-
-interface LeadObj {
-  utmSource?: string | null;
-  utmCampaign?: string | null;
-  utmTerm?: string | null;
-  budget?: string | null;
-  carName?: string | null;
-  carDescription?: string | null;
-}
+import {processCreatePerson} from "./processCreatePerson";
+import {processCreateLead} from "./processCreateLead";
 
 interface ProcessLeads {
   serviceName: ServiceNames,
   dateFromSaveTimestamp: Timestamp,
-  dateFromCheckTimestamp?: Timestamp,
   serviceDataArr: ServiceData[],
-  checkError?: boolean,
 }
 
 
@@ -31,18 +20,16 @@ async function processLeads(data: ProcessLeads): Promise<void> {
   const {
     serviceName,
     dateFromSaveTimestamp,
-    dateFromCheckTimestamp = dateFromSaveTimestamp,
     serviceDataArr,
-    checkError = true,
   } = data;
   const processedLeadsInfoArr: ProcessedLeadInfo[] = [];
 
   try {
+    const serviceLeadIds = serviceDataArr.map((serviceData) => serviceData.id);
     const savedLeads = await filterSavedLeads(
       {
         serviceName,
-        checkError,
-        dateFrom: dateFromCheckTimestamp,
+        serviceLeadIds,
       }
     );
 
@@ -81,22 +68,26 @@ async function processLeads(data: ProcessLeads): Promise<void> {
       processedLeadsInfoArr.push(processedLeadInfo);
 
       const personId: number = await processCreatePerson(
-        id,
-        serviceName,
-        savedLeads,
-        personObj
+        {
+          id,
+          serviceName,
+          savedLeads,
+          personObj,
+        }
       );
 
       processedLeadInfo.createdPersonId = personId;
       await delay(500);
 
       const leadId = await processCreateLead(
-        id,
-        parsedData.phone,
-        serviceName,
-        personId,
-        savedLeads,
-        leadObj
+        {
+          id,
+          phone: parsedData.phone,
+          serviceName,
+          personId,
+          savedLeads,
+          leadObj,
+        }
       );
 
       processedLeadInfo.createdLeadId = leadId;
@@ -110,61 +101,6 @@ async function processLeads(data: ProcessLeads): Promise<void> {
     throw new Error("Error");
   }
 }
-
-async function processCreatePerson(
-  id: string | number,
-  serviceName: ServiceNames,
-  savedLeads: SavedLeads,
-  personObj: CreatePersonFields
-) {
-  let personId: number;
-
-  console.log(`[${serviceName}] Processing person creation for ID: ${id}`);
-
-  if (savedLeads[id]?.createdPersonId) {
-    personId = savedLeads[id].createdPersonId as number;
-
-    console.log(
-      `[${serviceName}] Found existing person with ID: ${personId}`
-    );
-  } else {
-    personId = await createPerson(personObj);
-  }
-
-  return personId;
-}
-
-async function processCreateLead(
-  id: string | number,
-  phone: string,
-  serviceName: ServiceNames,
-  personId: number,
-  savedLeads: SavedLeads,
-  leadObj: LeadObj
-) {
-  let leadId: string;
-  const leadTitle = `${phone} - ${serviceName}`;
-
-  if (savedLeads[id]?.createdLeadId) {
-    leadId = savedLeads[id].createdLeadId as string;
-
-    console.log(
-      `[${serviceName}] Found existing lead with ID: ${leadId}`
-    );
-  } else {
-    leadId = await createLead(
-      {
-        title: leadTitle,
-        serviceName,
-        personId,
-        ...leadObj,
-      }
-    );
-  }
-
-  return leadId;
-}
-
 
 export {
   processLeads,

@@ -1,7 +1,6 @@
 import {ServiceNames} from "../enums";
 import {firestoreDb} from "../init";
 import {ProcessedLeadInfo} from "../interfaces";
-import {ErrorData} from "./interfaces";
 
 
 interface SavedLeads {
@@ -10,59 +9,43 @@ interface SavedLeads {
 
 interface FilterSavedLeads {
   serviceName: ServiceNames;
-  dateFrom: FirebaseFirestore.Timestamp;
-  checkError: boolean;
+  serviceLeadIds: Array<string | number>;
 }
 
 async function filterSavedLeads(
   data: FilterSavedLeads
 ): Promise<SavedLeads> {
-  const {serviceName, dateFrom, checkError} = data;
+  const {serviceName, serviceLeadIds} = data;
 
   const savedLeads: SavedLeads = {};
 
   try {
     console.log(`Starting to filter saved leads for service: ${serviceName}`);
 
-
-    if (checkError) {
-      const errorHandleDocRef = firestoreDb
-        .collection("error_handle")
-        .doc(serviceName);
-      const errorHandleDoc = await errorHandleDocRef.get();
-      const errorHandleData = errorHandleDoc.data() as ErrorData | undefined;
-
-      if (!errorHandleData?.isError) {
-        console.log(
-          // eslint-disable-next-line max-len
-          `No error found for service: ${serviceName}. Skipping filtering saved leads.`
-        );
-        return savedLeads;
-      }
-    }
-
-
     const collectionRef = firestoreDb
       .collection("lead_services")
       .doc(serviceName)
       .collection("leads");
 
-    const querySnapshot = await collectionRef
-      .where("dateFrom", ">=", dateFrom)
-      .get();
+    const uniqueLeadIds = Array.from(new Set(serviceLeadIds.map(String)));
 
-    if (querySnapshot.empty) {
-      // eslint-disable-next-line max-len
-      console.log(`No leads found for service: ${serviceName} starting from date: ${dateFrom.toDate()}`);
+    if (!uniqueLeadIds.length) {
+      console.log(`No lead IDs to check for service: ${serviceName}`);
       return savedLeads;
     }
 
-    console.log(
-      // eslint-disable-next-line max-len
-      `Found ${querySnapshot.size} leads for service: ${serviceName} starting from date: ${dateFrom.toDate()}`
+    const leadDocs = await Promise.all(
+      uniqueLeadIds.map((id) => collectionRef.doc(id).get())
     );
 
-    querySnapshot.forEach((doc) => {
+    if (!leadDocs.some((doc) => doc.exists)) {
+      console.log(`No saved leads found for service: ${serviceName}`);
+      return savedLeads;
+    }
+
+    leadDocs.forEach((doc) => {
+      if (!doc.exists) return;
+
       const docData = doc.data() as ProcessedLeadInfo;
       const docId = doc.id;
 
