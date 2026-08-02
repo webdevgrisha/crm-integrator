@@ -6,6 +6,11 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "outDir": "lib",
+    "baseUrl": ".",
+    "paths": {
+      "pipedrive/v1": ["node_modules/pipedrive/dist/versions/v1"],
+      "pipedrive/v2": ["node_modules/pipedrive/dist/versions/v2"]
+    },
     "sourceMap": true,
     "strict": true,
     "target": "es2017",

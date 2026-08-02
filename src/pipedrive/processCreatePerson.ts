@@ -1,6 +1,7 @@
 import { ServiceNames } from "../enums";
 import { SavedLeads } from "../utils/filterSavedLeads";
 import { createPerson, CreatePersonFields } from "./createPerson";
+import { findPerson } from "./findPerson";
 
 interface ProcessCreatePersonData {
   id: string | number;
@@ -24,7 +25,17 @@ async function processCreatePerson(
       `[${serviceName}] Found existing person with ID: ${personId}`
     );
   } else {
-    personId = await createPerson(personObj);
+    const existingPersonId = await findPerson(personObj);
+
+    if (existingPersonId) {
+      personId = existingPersonId;
+
+      console.log(
+        `[${serviceName}] Found matching person with ID: ${personId}`
+      );
+    } else {
+      personId = await createPerson(personObj);
+    }
   }
 
   return personId;

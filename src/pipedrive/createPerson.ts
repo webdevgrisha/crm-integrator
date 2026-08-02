@@ -1,10 +1,8 @@
-import {pipedriveConfig} from "../projectConfig";
-import {PersonFieldKeys} from "../projectConfig/pipedriveConfig/enums";
-import {PersonConfig} from "../projectConfig/pipedriveConfig/pipedriveConfig";
-import {getSecret} from "../utils/getSecret";
-/* eslint-disable @typescript-eslint/no-var-requires */
-const pipedrive = require("pipedrive");
-/* eslint-enable @typescript-eslint/no-var-requires */
+import { AddPersonRequest, PersonsApi } from "pipedrive/v2";
+import { pipedriveConfig } from "../projectConfig";
+import { PersonFieldKeys } from "../projectConfig/pipedriveConfig/enums";
+import { PersonConfig } from "../projectConfig/pipedriveConfig/pipedriveConfig";
+import { getPipedriveV2Config } from "./client";
 
 
 interface CreatePersonFields {
@@ -35,29 +33,30 @@ async function createPerson(
   );
 
   try {
-    const apiKey = await getSecret(pipedriveConfig.apiKeyName);
-
     const personConfig: PersonConfig = pipedriveConfig.personConfig;
+    const apiConfig = await getPipedriveV2Config();
 
-    const defaultClient = new pipedrive.ApiClient();
-    defaultClient.authentications.api_key.apiKey = apiKey;
-
-    const personApi = new pipedrive.PersonsApi(defaultClient);
-
-    const data = {
+    const personApi = new PersonsApi(apiConfig);
+    const data: AddPersonRequest = {
       name: personName,
-      phone: phone,
-      email: email,
+      phones: [{ value: phone, primary: true }],
+      emails: email ? [{ value: email, primary: true }] : [],
       // visibility groups
-      visible_to: personConfig.visible_to,
+      visible_to: Number(personConfig.visible_to),
       // custom fields
-      [PersonFieldKeys.Day]: callData,
-      [PersonFieldKeys.Hour]: callTime,
-      [PersonFieldKeys.CallStatus]: callRealise,
+      custom_fields: {
+        [PersonFieldKeys.Day]: callData,
+        [PersonFieldKeys.Hour]: callTime,
+        [PersonFieldKeys.CallStatus]: callRealise,
+      },
     };
 
-    const response = await personApi.addPerson(data);
-    const personId: number = response.data.id;
+    const response = await personApi.addPerson({ AddPersonRequest: data });
+    const personId = response.data?.id;
+
+    if (!personId) {
+      throw new Error("Pipedrive did not return created person ID");
+    }
 
     console.log(`Created new person with ID: ${personId}`);
 

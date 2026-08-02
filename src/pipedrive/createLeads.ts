@@ -1,12 +1,9 @@
-import {pipedriveConfig} from "../projectConfig";
-import {getSecret} from "../utils/getSecret";
-import {ServiceNames} from "../enums";
-import {LeadConfig} from "../projectConfig/pipedriveConfig/pipedriveConfig";
-import {LeadFieldKeys} from "../projectConfig/pipedriveConfig/enums";
-
-/* eslint-disable @typescript-eslint/no-var-requires */
-const pipedrive = require("pipedrive");
-/* eslint-enable @typescript-eslint/no-var-requires */
+import { AddLeadRequest, LeadsApi } from "pipedrive/v1";
+import { pipedriveConfig } from "../projectConfig";
+import { ServiceNames } from "../enums";
+import { LeadConfig } from "../projectConfig/pipedriveConfig/pipedriveConfig";
+import { LeadFieldKeys } from "../projectConfig/pipedriveConfig/enums";
+import { getPipedriveV1Config } from "./client";
 
 
 interface CreateLeadFields {
@@ -38,18 +35,13 @@ async function createLead(
 
 
   try {
-    const apiKey: string = await getSecret(pipedriveConfig.apiKeyName);
-
     const leadConfig: LeadConfig = pipedriveConfig.leadConfig;
-
-    const defaultClient = new pipedrive.ApiClient();
-    defaultClient.authentications.api_key.apiKey = apiKey;
-
-    const api = new pipedrive.LeadsApi(defaultClient);
+    const apiConfig = await getPipedriveV1Config();
+    const api = new LeadsApi(apiConfig);
 
     const channelId: number = leadConfig.channelsId[serviceName];
 
-    const data = {
+    const data: AddLeadRequest & Record<string, unknown> = {
       title: title,
       value: {
         amount: Number(budget),
@@ -68,8 +60,12 @@ async function createLead(
       // was_seen: true
     };
 
-    const response = await api.addLead(data);
-    const leadId: string = response.data.id;
+    const response = await api.addLead({ AddLeadRequest: data });
+    const leadId = response.data?.id;
+
+    if (!leadId) {
+      throw new Error("Pipedrive did not return created lead ID");
+    }
 
     console.log(`Created lead with ID: ${leadId}`);
 
@@ -90,4 +86,4 @@ async function createLead(
 }
 
 
-export {createLead};
+export { createLead };

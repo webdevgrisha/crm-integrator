@@ -12,7 +12,7 @@
     "logs": "firebase functions:log"
   },
   "engines": {
-    "node": "20"
+    "node": "22"
   },
   "main": "lib/index.js",
   "dependencies": {
@@ -29,7 +29,7 @@
     "imap-simple": "^5.1.0",
     "mailparser": "^3.7.2",
     "nodemailer": "^6.10.0",
-    "pipedrive": "^23.4.3",
+    "pipedrive": "^33.5.0",
     "winston": "^3.17.0",
     "winston-loki": "^6.1.3"
   },

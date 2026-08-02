@@ -1,13 +1,13 @@
-import {Timestamp} from "firebase-admin/firestore";
-import {filterSavedLeads} from "../utils/filterSavedLeads";
-import {ProcessedLeadInfo} from "../interfaces";
-import {LeadObj, ServiceData} from "./interfaces";
-import {parseServiceData} from "./parseServiceData";
-import {delay} from "../utils/delay";
-import {ServiceNames} from "../enums";
-import {saveProcessedLeadInfo} from "../utils/saveLeadInfo";
-import {processCreatePerson} from "./processCreatePerson";
-import {processCreateLead} from "./processCreateLead";
+import { Timestamp } from "firebase-admin/firestore";
+import { filterSavedLeads } from "../utils/filterSavedLeads";
+import { ProcessedLeadInfo } from "../interfaces";
+import { LeadObj, ServiceData } from "./interfaces";
+import { parseServiceData } from "./parseServiceData";
+import { delay } from "../utils/delay";
+import { ServiceNames } from "../enums";
+import { saveProcessedLeadInfo } from "../utils/saveLeadInfo";
+import { processCreatePerson } from "./processCreatePerson";
+import { processCreateLead } from "./processCreateLead";
 
 interface ProcessLeads {
   serviceName: ServiceNames,
@@ -36,7 +36,16 @@ async function processLeads(data: ProcessLeads): Promise<void> {
     console.log(`[${serviceName}] filterSavedLeads: ${savedLeads}`);
 
     for (const data of serviceDataArr) {
-      const {id, ...parsedData} = parseServiceData(data);
+      const { id, ...parsedData } = parseServiceData(data);
+
+      console.log(`[${serviceName}] Processing lead with ID: ${id}`);
+
+      if (savedLeads[id]?.createdLeadId) {
+        console.log(
+          `[${serviceName}] Lead with ID ${id} already processed. Skipping.`
+        );
+        continue;
+      }
 
       const personObj = {
         phone: parsedData.phone,
@@ -55,8 +64,6 @@ async function processLeads(data: ProcessLeads): Promise<void> {
         carName: parsedData.carName,
         carDescription: parsedData.carDescription,
       };
-
-      console.log(`[${serviceName}] Processing lead with ID: ${id}`);
 
       const processedLeadInfo: ProcessedLeadInfo = {
         serviceLeadId: id,
