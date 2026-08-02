@@ -1,4 +1,4 @@
-import {ServiceNames} from "../enums";
+import { ServiceNames } from "../enums";
 
 const formFields = [
   "created_time",
@@ -6,6 +6,13 @@ const formFields = [
   "campaign_name",
   "field_data",
 ];
+
+const leadgenFormsParams: Record<string, unknown> = {
+  fields: "id,name,status",
+  limit: 100,
+};
+
+const leadgenFormsEdge = "leadgen_forms";
 
 type FieldDataNameTranslation = {
   [key in LeadDataNames]: string;
@@ -32,6 +39,8 @@ interface FacebookConfig {
   serviceName: ServiceNames;
   apiKeyName: string;
   formFields: string[];
+  leadgenFormsParams: Record<string, unknown>;
+  leadgenFormsEdge: string;
   fieldDataNameTranslation: FieldDataNameTranslation;
   cron: {
     schedule: string;
@@ -44,6 +53,8 @@ const facebookConfig: FacebookConfig = {
   serviceName: ServiceNames.Facebook,
   apiKeyName: "facebook-api",
   formFields: formFields,
+  leadgenFormsParams,
+  leadgenFormsEdge,
   fieldDataNameTranslation,
   cron: {
     schedule: "10 * * * *",

@@ -83,14 +83,14 @@ This document describes the data contained in each secret stored in Google Secre
 
 ### 5. `facebook-api`
 
-- **Description**: Contains the access token for Facebook API and the ID of the form from which data is retrieved.
+- **Description**: Contains the Page Access Token for Facebook API and the ID of the page from which active lead forms are retrieved.
 - **Format**: JSON
 - **Example**:
 
 ```json
 {
   "access_token": "your-facebook-access-token",
-  "id": "your-facebook-form-id"
+  "page_id": "your-facebook-page-id"
 }
 ```
 

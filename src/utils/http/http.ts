@@ -56,8 +56,11 @@ async function httpGet(
       responseData: requestError.response?.data,
     });
 
-    const errorMessage = `Failed to make GET request to ${path}: ${requestError.message ?? String(error)
-      }`;
+    const requestErrorMessage =
+      requestError.message ?? String(error);
+
+    const errorMessage =
+      `Failed to make GET request to ${path}: ${requestErrorMessage}`;
 
     throw new Error(errorMessage);
   }

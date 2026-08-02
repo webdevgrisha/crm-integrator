@@ -1,20 +1,21 @@
 import * as bizSdk from "facebook-nodejs-business-sdk";
-import {getSecret} from "../utils/getSecret";
-import Cursor from "facebook-nodejs-business-sdk/src/cursor";
-import {facebookConfig} from "../projectConfig";
-import {FacebookLeadData} from "./interfaces";
-
-const Ad = bizSdk.Ad;
+import { getSecret } from "../utils/getSecret";
+import { facebookConfig } from "../projectConfig";
+import { FacebookApiSecret, FacebookLeadData } from "./interfaces";
+import { getLeadgenForms } from "./getLeadgenForms";
+import { getFormLeads } from "./getFormLeads";
 
 async function getFacebookLeadsData(
   dateFrom: number,
   dateTo: number
 ): Promise<FacebookLeadData[]> {
-  const facebookApi = JSON.parse(await getSecret(facebookConfig.apiKeyName));
+  const facebookApi = JSON.parse(
+    await getSecret(facebookConfig.apiKeyName)
+  ) as FacebookApiSecret;
 
-  bizSdk.FacebookAdsApi.init(facebookApi.access_token);
+  const api = bizSdk.FacebookAdsApi.init(facebookApi.access_token);
 
-  const params = {
+  const leadParams = {
     filtering: [
       {
         field: "time_created",
@@ -30,19 +31,20 @@ async function getFacebookLeadsData(
   };
 
   try {
-    // facebookApi.id is the identifier of the Facebook Lead Ads form.
-    // in this case the data is read from one form
-    let leads: Cursor | null = await new Ad(facebookApi.id).getLeads(
-      facebookConfig.formFields, params
-    );
-
+    const forms = await getLeadgenForms(facebookApi, api);
     const allLeads: FacebookLeadData[] = [];
 
-    while (leads) {
-      const typedLeads = leads as unknown as FacebookLeadData[];
-      allLeads.push(...typedLeads);
+    console.log(`[facebook] Fetching leads from ${forms.length} forms`);
 
-      leads = leads.hasNext() ? await leads.next() : null;
+    for (const form of forms) {
+      const formLeads = await getFormLeads(form.id, leadParams);
+
+      console.log(
+        `[facebook] Fetched ${formLeads.length} records from form ` +
+        `${form.id}${form.name ? ` (${form.name})` : ""}`
+      );
+
+      allLeads.push(...formLeads);
     }
 
     return allLeads;

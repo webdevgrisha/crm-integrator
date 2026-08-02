@@ -1,4 +1,4 @@
-import {LeadDataNames} from "../projectConfig/facebookConfig";
+import { LeadDataNames } from "../projectConfig/facebookConfig";
 
 
 interface LeadFiledData {
@@ -29,8 +29,31 @@ interface FacebookProcessData extends FacebookLeadInfo {
     campaignName: string;
 }
 
+interface FacebookApiSecret {
+    access_token: string;
+    page_id: string;
+}
+
+interface FacebookLeadgenForm {
+    id: string;
+    name?: string;
+    status?: string;
+}
+
+interface FacebookLeadgenFormsResponse {
+    data?: FacebookLeadgenForm[];
+    paging?: {
+        cursors?: {
+            after?: string;
+        };
+    };
+}
+
 export type {
-  FacebookLeadData,
-  FacebookLeadInfo,
-  FacebookProcessData,
+    FacebookLeadData,
+    FacebookLeadInfo,
+    FacebookProcessData,
+    FacebookApiSecret,
+    FacebookLeadgenForm,
+    FacebookLeadgenFormsResponse,
 };
