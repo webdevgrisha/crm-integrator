@@ -1,6 +1,9 @@
 import * as admin from "firebase-admin";
+import {utilsConfig} from "./projectConfig";
 
-admin.initializeApp();
+admin.initializeApp({
+  projectId: utilsConfig.secretManagerConfig.projectId,
+});
 
 const firestoreDb = admin.firestore();
 

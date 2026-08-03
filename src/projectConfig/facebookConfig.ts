@@ -20,8 +20,8 @@ type FacebookLeadInfoKey =
   "email" |
   "callTime" |
   "carName" |
-  "budget" |
-  "utmTerm";
+  "formBudget" |
+  "purchasePlan";
 
 type FieldDataNameTranslation = {
   [key in LeadDataNames]: FacebookLeadInfoKey;
@@ -47,8 +47,8 @@ const fieldDataNameTranslation: FieldDataNameTranslation = {
   [LeadDataNames.PersonNameV2]: "name",
   [LeadDataNames.Email]: "email",
   [LeadDataNames.CarName]: "carName",
-  [LeadDataNames.Budget]: "budget",
-  [LeadDataNames.PurchasePlan]: "utmTerm",
+  [LeadDataNames.Budget]: "formBudget",
+  [LeadDataNames.PurchasePlan]: "purchasePlan",
 };
 
 

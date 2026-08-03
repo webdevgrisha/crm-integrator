@@ -4,12 +4,11 @@ import {
   FacebookLeadData,
   FacebookLeadInfo,
 } from "./interfaces";
+import {buildFacebookLeadDescription} from "./buildFacebookLeadDescription";
 
 function reformatFacebookLeads(
   leads: FacebookLeadData[]
 ): FacebookProcessData[] {
-  // ссылка в докмеетации
-
   try {
     const reformatLeads: FacebookProcessData[] = leads.map(
       (lead: FacebookLeadData) => {
@@ -19,8 +18,8 @@ function reformatFacebookLeads(
           email: "",
           callTime: "",
           carName: "",
-          budget: "",
-          utmTerm: "",
+          formBudget: "",
+          purchasePlan: "",
         };
 
         lead.field_data.forEach((field) => {
@@ -48,6 +47,12 @@ function reformatFacebookLeads(
           leadInfo.carName =
             leadInfo.carName.slice(0, MAX_LENGTH - SUFFIX.length) + SUFFIX;
         }
+
+        leadInfo.description = buildFacebookLeadDescription({
+          description: leadInfo.description,
+          formBudget: leadInfo.formBudget,
+          purchasePlan: leadInfo.purchasePlan,
+        });
 
         return {
           id: lead.id,
