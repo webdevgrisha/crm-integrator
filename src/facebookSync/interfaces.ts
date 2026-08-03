@@ -1,4 +1,4 @@
-import { LeadDataNames } from "../projectConfig/facebookConfig";
+import {LeadDataNames} from "../projectConfig/facebookConfig";
 
 
 interface LeadFiledData {
@@ -50,10 +50,10 @@ interface FacebookLeadgenFormsResponse {
 }
 
 export type {
-    FacebookLeadData,
-    FacebookLeadInfo,
-    FacebookProcessData,
-    FacebookApiSecret,
-    FacebookLeadgenForm,
-    FacebookLeadgenFormsResponse,
+  FacebookLeadData,
+  FacebookLeadInfo,
+  FacebookProcessData,
+  FacebookApiSecret,
+  FacebookLeadgenForm,
+  FacebookLeadgenFormsResponse,
 };

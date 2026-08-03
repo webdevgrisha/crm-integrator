@@ -6,10 +6,18 @@ import {Currency, VisibilityGroup} from "./enums";
 // https://developers.pipedrive.com/docs/api/v1/Persons
 interface PersonConfig {
   visible_to: VisibilityGroup,
+  callStatusOptions: {
+    yes: number,
+    no: number,
+  },
 }
 
 const personConfig: PersonConfig = {
   visible_to: VisibilityGroup.EntireCompany,
+  callStatusOptions: {
+    yes: 42,
+    no: 43,
+  },
 };
 
 

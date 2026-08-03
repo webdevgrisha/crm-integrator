@@ -1,6 +1,6 @@
-import { PersonsApi } from "pipedrive/v2";
-import { CreatePersonFields, PersonId } from "./createPerson";
-import { getPipedriveV2Config } from "./client";
+import {PersonsApi} from "pipedrive/v2";
+import {CreatePersonFields, PersonId} from "./createPerson";
+import {getPipedriveV2Config} from "./client";
 
 async function findPerson(
   personObj: CreatePersonFields
@@ -71,4 +71,4 @@ function normalizePhone(phone: string): string {
   return phone.replace(/\D/g, "");
 }
 
-export { findPerson };
+export {findPerson};

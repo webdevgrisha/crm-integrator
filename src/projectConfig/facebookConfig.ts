@@ -1,4 +1,4 @@
-import { ServiceNames } from "../enums";
+import {ServiceNames} from "../enums";
 
 const formFields = [
   "created_time",

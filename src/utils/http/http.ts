@@ -1,5 +1,5 @@
-import axios, { AxiosResponse } from "axios";
-import { initializedProxy } from "./proxy";
+import axios, {AxiosResponse} from "axios";
+import {initializedProxy} from "./proxy";
 import logger from "../logger";
 
 interface HttpHeaders {

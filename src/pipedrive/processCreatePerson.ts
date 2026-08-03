@@ -1,7 +1,7 @@
-import { ServiceNames } from "../enums";
-import { SavedLeads } from "../utils/filterSavedLeads";
-import { createPerson, CreatePersonFields } from "./createPerson";
-import { findPerson } from "./findPerson";
+import {ServiceNames} from "../enums";
+import {SavedLeads} from "../utils/filterSavedLeads";
+import {createPerson, CreatePersonFields} from "./createPerson";
+import {findPerson} from "./findPerson";
 
 interface ProcessCreatePersonData {
   id: string | number;
@@ -13,7 +13,7 @@ interface ProcessCreatePersonData {
 async function processCreatePerson(
   data: ProcessCreatePersonData
 ) {
-  const { id, serviceName, savedLeads, personObj } = data;
+  const {id, serviceName, savedLeads, personObj} = data;
   let personId: number;
 
   console.log(`[${serviceName}] Processing person creation for ID: ${id}`);
@@ -41,4 +41,4 @@ async function processCreatePerson(
   return personId;
 }
 
-export { processCreatePerson };
+export {processCreatePerson};

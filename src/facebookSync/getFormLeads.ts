@@ -1,7 +1,7 @@
 import * as bizSdk from "facebook-nodejs-business-sdk";
 import Cursor from "facebook-nodejs-business-sdk/src/cursor";
-import { facebookConfig } from "../projectConfig";
-import { FacebookLeadData } from "./interfaces";
+import {facebookConfig} from "../projectConfig";
+import {FacebookLeadData} from "./interfaces";
 
 const LeadgenForm = bizSdk.LeadgenForm;
 
@@ -24,4 +24,4 @@ async function getFormLeads(
   return allLeads;
 }
 
-export { getFormLeads };
+export {getFormLeads};

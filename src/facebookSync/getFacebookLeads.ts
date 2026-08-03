@@ -1,9 +1,9 @@
 import * as bizSdk from "facebook-nodejs-business-sdk";
-import { getSecret } from "../utils/getSecret";
-import { facebookConfig } from "../projectConfig";
-import { FacebookApiSecret, FacebookLeadData } from "./interfaces";
-import { getLeadgenForms } from "./getLeadgenForms";
-import { getFormLeads } from "./getFormLeads";
+import {getSecret} from "../utils/getSecret";
+import {facebookConfig} from "../projectConfig";
+import {FacebookApiSecret, FacebookLeadData} from "./interfaces";
+import {getLeadgenForms} from "./getLeadgenForms";
+import {getFormLeads} from "./getFormLeads";
 
 async function getFacebookLeadsData(
   dateFrom: number,

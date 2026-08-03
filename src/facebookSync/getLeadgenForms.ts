@@ -4,7 +4,7 @@ import {
   FacebookLeadgenForm,
   FacebookLeadgenFormsResponse,
 } from "./interfaces";
-import { facebookConfig } from "../projectConfig";
+import {facebookConfig} from "../projectConfig";
 
 async function getLeadgenForms(
   facebookApi: FacebookApiSecret,
@@ -35,11 +35,11 @@ async function getLeadgenForms(
     response = await api.call(
       "GET",
       [facebookApi.page_id, facebookConfig.leadgenFormsEdge],
-      { ...facebookConfig.leadgenFormsParams, after }
+      {...facebookConfig.leadgenFormsParams, after}
     );
   }
 
   return forms;
 }
 
-export { getLeadgenForms };
+export {getLeadgenForms};

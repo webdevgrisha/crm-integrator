@@ -1,7 +1,7 @@
-import { ServiceNames } from "../enums";
-import { SavedLeads } from "../utils/filterSavedLeads";
-import { createLead } from "./createLeads";
-import { LeadObj } from "./interfaces";
+import {ServiceNames} from "../enums";
+import {SavedLeads} from "../utils/filterSavedLeads";
+import {createLead} from "./createLeads";
+import {LeadObj} from "./interfaces";
 
 interface ProcessCreateLeadData {
   id: string | number;
@@ -15,7 +15,7 @@ interface ProcessCreateLeadData {
 async function processCreateLead(
   data: ProcessCreateLeadData
 ) {
-  const { id, phone, serviceName, personId, savedLeads, leadObj } = data;
+  const {id, phone, serviceName, personId, savedLeads, leadObj} = data;
   let leadId: string;
   const leadTitle = `${phone} - ${serviceName}`;
 
@@ -39,4 +39,4 @@ async function processCreateLead(
   return leadId;
 }
 
-export { processCreateLead };
+export {processCreateLead};

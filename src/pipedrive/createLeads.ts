@@ -1,9 +1,9 @@
-import { AddLeadRequest, LeadsApi } from "pipedrive/v1";
-import { pipedriveConfig } from "../projectConfig";
-import { ServiceNames } from "../enums";
-import { LeadConfig } from "../projectConfig/pipedriveConfig/pipedriveConfig";
-import { LeadFieldKeys } from "../projectConfig/pipedriveConfig/enums";
-import { getPipedriveV1Config } from "./client";
+import {AddLeadRequest, LeadsApi} from "pipedrive/v1";
+import {pipedriveConfig} from "../projectConfig";
+import {ServiceNames} from "../enums";
+import {LeadConfig} from "../projectConfig/pipedriveConfig/pipedriveConfig";
+import {LeadFieldKeys} from "../projectConfig/pipedriveConfig/enums";
+import {getPipedriveV1Config} from "./client";
 
 
 interface CreateLeadFields {
@@ -60,7 +60,7 @@ async function createLead(
       // was_seen: true
     };
 
-    const response = await api.addLead({ AddLeadRequest: data });
+    const response = await api.addLead({AddLeadRequest: data});
     const leadId = response.data?.id;
 
     if (!leadId) {
@@ -86,4 +86,4 @@ async function createLead(
 }
 
 
-export { createLead };
+export {createLead};
