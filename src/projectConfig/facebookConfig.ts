@@ -14,24 +14,41 @@ const leadgenFormsParams: Record<string, unknown> = {
 
 const leadgenFormsEdge = "leadgen_forms";
 
+type FacebookLeadInfoKey =
+  "name" |
+  "phone" |
+  "email" |
+  "callTime" |
+  "carName" |
+  "budget" |
+  "utmTerm";
+
 type FieldDataNameTranslation = {
-  [key in LeadDataNames]: string;
+  [key in LeadDataNames]: FacebookLeadInfoKey;
 }
 
 enum LeadDataNames {
   ContactHours = "w_jakich_godzinach_można_się_kontaktować_?_",
   PhoneNumber = "numer_telefonu",
+  PhoneNumberV2 = "phone_number",
   PersonName = "imię",
+  PersonNameV2 = "full_name",
   Email = "email",
   CarName = "jakiego_samochodu_szukasz_?",
+  Budget = "jaki_jest_twój_budżet?",
+  PurchasePlan = "kiedy_planujesz_zakup_nowego_auta?",
 }
 
 const fieldDataNameTranslation: FieldDataNameTranslation = {
   [LeadDataNames.ContactHours]: "callTime",
   [LeadDataNames.PhoneNumber]: "phone",
+  [LeadDataNames.PhoneNumberV2]: "phone",
   [LeadDataNames.PersonName]: "name",
+  [LeadDataNames.PersonNameV2]: "name",
   [LeadDataNames.Email]: "email",
   [LeadDataNames.CarName]: "carName",
+  [LeadDataNames.Budget]: "budget",
+  [LeadDataNames.PurchasePlan]: "utmTerm",
 };
 
 

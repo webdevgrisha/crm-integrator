@@ -19,13 +19,22 @@ function reformatFacebookLeads(
           email: "",
           callTime: "",
           carName: "",
+          budget: "",
+          utmTerm: "",
         };
 
         lead.field_data.forEach((field) => {
           const leadInfoKey =
-            facebookConfig.fieldDataNameTranslation[
-              field.name
-            ] as keyof FacebookLeadInfo;
+            facebookConfig.fieldDataNameTranslation[field.name];
+
+          if (!leadInfoKey) {
+            console.log(
+              `[facebook] Unknown lead field "${field.name}" ` +
+              `for lead ${lead.id}`
+            );
+            return;
+          }
+
           leadInfo[leadInfoKey] = field.values[0];
         });
 

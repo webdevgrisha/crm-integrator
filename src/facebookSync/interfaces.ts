@@ -20,6 +20,8 @@ interface FacebookLeadInfo {
     email: string;
     callTime: string;
     carName: string;
+    budget: string;
+    utmTerm: string;
     description?: string;
 }
 
