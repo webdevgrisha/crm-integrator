@@ -14,6 +14,11 @@ interface CreatePersonFields {
   callRealize?: "Tak" | "Nie";
 }
 
+interface TimeCustomFieldValue {
+  value: string;
+  timezone_name: string;
+}
+
 type PersonId = number;
 
 async function createPerson(
@@ -39,7 +44,7 @@ async function createPerson(
     const personApi = new PersonsApi(apiConfig);
     const customFields = {
       [PersonFieldKeys.Day]: callData,
-      [PersonFieldKeys.Hour]: callTime,
+      [PersonFieldKeys.Hour]: getTimeCustomFieldValue(callTime),
       [PersonFieldKeys.CallStatus]: getCallStatusOptionId(
         callRealize,
         personConfig
@@ -78,6 +83,19 @@ async function createPerson(
       );
     }
   }
+}
+
+function getTimeCustomFieldValue(
+  callTime?: string | null
+): TimeCustomFieldValue | null {
+  if (!callTime) {
+    return null;
+  }
+
+  return {
+    value: callTime,
+    timezone_name: "Europe/Warsaw",
+  };
 }
 
 function getCallStatusOptionId(
